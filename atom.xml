@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Lucien</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://www.dujianping.com/"/>
+  <updated>2016-12-07T10:00:48.000Z</updated>
+  <id>http://www.dujianping.com/</id>
+  
+  <author>
+    <name>Lucien</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Test</title>
+    <link href="http://www.dujianping.com/2016/12/06/Test/"/>
+    <id>http://www.dujianping.com/2016/12/06/Test/</id>
+    <published>2016-12-06T02:49:32.000Z</published>
+    <updated>2016-12-07T10:00:48.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>  我们理解您需要更便捷更高效的工具记录思想，整理笔记、知识，并将其中承载的价值传播给他人，<strong>Cmd Markdown</strong> 是我们给出的答案 —— 我们为记录思想和分享知识提供更专业的工具。</p>
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="//music.163.com/outchain/player?type=2&id=3164322&auto=1&height=66"></iframe>
+
+
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;  我们理解您需要更便捷更高效的工具记录思想，整理笔记、知识，并将其中承载的价值传播给他人，&lt;strong&gt;Cmd Markdown&lt;/strong&gt; 是我们给出的答案 —— 我们为记录思想和分享知识提供更专业的工具。&lt;/p&gt;
+&lt;iframe frameborder=&quot;no
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
