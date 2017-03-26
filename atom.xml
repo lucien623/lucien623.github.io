@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.dujianping.com/"/>
-  <updated>2017-01-05T15:48:42.000Z</updated>
+  <updated>2017-03-26T12:38:00.000Z</updated>
   <id>http://www.dujianping.com/</id>
   
   <author>
@@ -14,6 +14,26 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>开始</title>
+    <link href="http://www.dujianping.com/2017/03/26/%E5%BC%80%E5%A7%8B/"/>
+    <id>http://www.dujianping.com/2017/03/26/开始/</id>
+    <published>2017-03-26T12:37:12.000Z</published>
+    <updated>2017-03-26T12:38:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>这是一个开始，开始寻找一个新的开始。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这是一个开始，开始寻找一个新的开始。&lt;/p&gt;
+
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>我有一个梦想</title>
@@ -42,7 +62,7 @@
     <link href="http://www.dujianping.com/2017/01/01/2017%E5%B9%B4%E7%9A%84%E4%B9%A6%E5%8D%95/"/>
     <id>http://www.dujianping.com/2017/01/01/2017年的书单/</id>
     <published>2016-12-31T16:34:50.000Z</published>
-    <updated>2017-01-05T15:59:33.000Z</updated>
+    <updated>2017-01-05T16:00:40.000Z</updated>
     
     <content type="html"><![CDATA[<ul>
 <li>《巨流河》 作者: 齐邦媛 </li>
