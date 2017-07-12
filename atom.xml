@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.dujianping.com/"/>
-  <updated>2017-07-10T09:10:32.000Z</updated>
+  <updated>2017-07-12T03:40:18.000Z</updated>
   <id>http://www.dujianping.com/</id>
   
   <author>
@@ -16,13 +16,87 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Android事件分发</title>
+    <link href="http://www.dujianping.com/2017/07/11/android%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91/"/>
+    <id>http://www.dujianping.com/2017/07/11/android事件分发/</id>
+    <published>2017-07-11T09:06:00.000Z</published>
+    <updated>2017-07-12T03:40:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Android 中和事件分发相关的主要有三个方法，这些方法的返回值影响着  Touch 事件的传递方向，方法的包涵情况具体如下表：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:center">dispatchTouchEvent(…)</th>
+<th style="text-align:center">onInterceptTouchEvent(…)</th>
+<th style="text-align:center">onTouchEvent(…)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Activity</td>
+<td style="text-align:center">yes</td>
+<td style="text-align:center">no</td>
+<td style="text-align:center">yes</td>
+</tr>
+<tr>
+<td>ViewGroup</td>
+<td style="text-align:center">yes</td>
+<td style="text-align:center">yes</td>
+<td style="text-align:center">yes</td>
+</tr>
+<tr>
+<td>view</td>
+<td style="text-align:center">yes</td>
+<td style="text-align:center">no</td>
+<td style="text-align:center">yes</td>
+</tr>
+</tbody>
+</table>
+<p>以下为事件分发流程图（针对于 ACTION_DOWN 事件，可点击查看大图）</p>
+<p><img src="http://ohsz38osq.bkt.clouddn.com/touchevent.png" alt=""></p>
+<p>如图所示的事件传递流向已十分清晰，demo 也十分易写，只需自行重写这些方法，打印日志便可验证。</p>
+<p>对于 ACTION_MOVE 和 ACTION_UP 事件的传递则略有不同，它们的传递和 ACTION_DOWN 事件传递的终点相关，以下举例。</p>
+<h4 id="1）在-View-的-onTouchEvent-消费事件，即-return-true。"><a href="#1）在-View-的-onTouchEvent-消费事件，即-return-true。" class="headerlink" title="1）在 View 的 onTouchEvent 消费事件，即 return true。"></a>1）在 View 的 onTouchEvent 消费事件，即 return true。</h4><p>日志：</p>
+<p><img src="http://ohsz38osq.bkt.clouddn.com/touchevent_2_log.png" alt=""></p>
+<p>事件传递的流向图：</p>
+<p><img src="http://ohsz38osq.bkt.clouddn.com/touchevent_2.png" alt=""></p>
+<h4 id="2）在-ViewGroup-的-onTouchEvent-…-消费事件，即-return-true。"><a href="#2）在-ViewGroup-的-onTouchEvent-…-消费事件，即-return-true。" class="headerlink" title="2）在 ViewGroup 的 onTouchEvent(…) 消费事件，即 return true。"></a>2）在 ViewGroup 的 onTouchEvent(…) 消费事件，即 return true。</h4><p>日志：</p>
+<p><img src="http://ohsz38osq.bkt.clouddn.com/touchevent_1_log.png" alt=""></p>
+<p>事件传递的流向图：</p>
+<p><img src="http://ohsz38osq.bkt.clouddn.com/touchevent_1.png" alt=""></p>
+<h4 id="3）在-ViewGroup-的-dispatchTouchEvent-…-方法中-return-false。"><a href="#3）在-ViewGroup-的-dispatchTouchEvent-…-方法中-return-false。" class="headerlink" title="3）在 ViewGroup 的 dispatchTouchEvent(…) 方法中 return false。"></a>3）在 ViewGroup 的 dispatchTouchEvent(…) 方法中 return false。</h4><p>日志：</p>
+<p><img src="http://ohsz38osq.bkt.clouddn.com/touchevent_3_log.png" alt=""></p>
+<p>事件传递流向图：</p>
+<p><img src="http://ohsz38osq.bkt.clouddn.com/touchevent_3.png" alt=""></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Android 中和事件分发相关的主要有三个方法，这些方法的返回值影响着  Touch 事件的传递方向，方法的包涵情况具体如下表：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th style=&quot;text-align:center&quot;&gt;dispat
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.dujianping.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="android" scheme="http://www.dujianping.com/tags%C3%9F/android/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Activity生命周期</title>
     <link href="http://www.dujianping.com/2017/07/10/Activity%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"/>
     <id>http://www.dujianping.com/2017/07/10/Activity生命周期/</id>
     <published>2017-07-10T03:37:39.000Z</published>
-    <updated>2017-07-10T09:10:32.000Z</updated>
+    <updated>2017-07-12T01:19:13.000Z</updated>
     
-    <content type="html"><![CDATA[<h3 id="Activity生命周期"><a href="#Activity生命周期" class="headerlink" title="Activity生命周期"></a>Activity生命周期</h3><p><img src="https://developer.android.com/images/activity_lifecycle.png" alt="activity-life"></p>
+    <content type="html"><![CDATA[<p>Activity 是 Android 四大组件之一，它主要给用户提供了一个交互页面，用户通过它与app进行交互，以执行各种操作。 每个 Activity 都会获得一个用于绘制其用户界面的窗口。窗口通常会充满屏幕，但也可小于屏幕并浮动在其他窗口之上（将 Activity 的 theme 设置为 Dialog）。Activity生命周期中主要的七个回调方法介绍如下表：</p>
 <table>
 <thead>
 <tr>
@@ -61,11 +135,12 @@
 </tr>
 </tbody>
 </table>
+<p><img src="https://developer.android.com/images/activity_lifecycle.png" alt="activity-life"></p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;Activity生命周期&quot;&gt;&lt;a href=&quot;#Activity生命周期&quot; class=&quot;headerlink&quot; title=&quot;Activity生命周期&quot;&gt;&lt;/a&gt;Activity生命周期&lt;/h3&gt;&lt;p&gt;&lt;img src=&quot;https://developer.an
+      &lt;p&gt;Activity 是 Android 四大组件之一，它主要给用户提供了一个交互页面，用户通过它与app进行交互，以执行各种操作。 每个 Activity 都会获得一个用于绘制其用户界面的窗口。窗口通常会充满屏幕，但也可小于屏幕并浮动在其他窗口之上（将 Activity 的 
     
     </summary>
     
