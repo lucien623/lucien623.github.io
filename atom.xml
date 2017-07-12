@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.dujianping.com/"/>
-  <updated>2017-07-12T03:40:18.000Z</updated>
+  <updated>2017-07-12T04:36:57.000Z</updated>
   <id>http://www.dujianping.com/</id>
   
   <author>
@@ -20,9 +20,9 @@
     <link href="http://www.dujianping.com/2017/07/11/android%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91/"/>
     <id>http://www.dujianping.com/2017/07/11/android事件分发/</id>
     <published>2017-07-11T09:06:00.000Z</published>
-    <updated>2017-07-12T03:40:18.000Z</updated>
+    <updated>2017-07-12T04:36:57.000Z</updated>
     
-    <content type="html"><![CDATA[<p>Android 中和事件分发相关的主要有三个方法，这些方法的返回值影响着  Touch 事件的传递方向，方法的包涵情况具体如下表：</p>
+    <content type="html"><![CDATA[<p>Android 中和事件分发相关的主要有三个方法，分别是 dispatchTouchEvent(…)、onInterceptTouchEvent(…) 和 onTouchEvent(…)，主要作用是分发事件、是否拦截事件以及处理事件，这些方法的返回值决定了 Touch 事件的传递方向，方法的包涵情况具体如下表所示：</p>
 <table>
 <thead>
 <tr>
@@ -73,12 +73,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;Android 中和事件分发相关的主要有三个方法，这些方法的返回值影响着  Touch 事件的传递方向，方法的包涵情况具体如下表：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;&lt;/th&gt;
-&lt;th style=&quot;text-align:center&quot;&gt;dispat
+      &lt;p&gt;Android 中和事件分发相关的主要有三个方法，分别是 dispatchTouchEvent(…)、onInterceptTouchEvent(…) 和 onTouchEvent(…)，主要作用是分发事件、是否拦截事件以及处理事件，这些方法的返回值决定了 Touch 事件
     
     </summary>
     
