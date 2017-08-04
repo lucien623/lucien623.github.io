@@ -151,7 +151,7 @@
     <link href="http://www.dujianping.com/2017/07/10/android-review-launchMode/"/>
     <id>http://www.dujianping.com/2017/07/10/android-review-launchMode/</id>
     <published>2017-07-10T03:13:35.000Z</published>
-    <updated>2017-07-10T09:31:08.000Z</updated>
+    <updated>2017-08-04T05:42:24.000Z</updated>
     
     <content type="html"><![CDATA[<h3 id="launchMode"><a href="#launchMode" class="headerlink" title="launchMode"></a>launchMode</h3><ul>
 <li><p>standard<br>默认的启动方式，每次都会创建一个活动的实例。<br>task 1: A-B-C-D<br>add D<br>task 1: A-B-C-D-D</p>
@@ -167,8 +167,7 @@
     
     <summary type="html">
     
-      &lt;h3 id=&quot;launchMode&quot;&gt;&lt;a href=&quot;#launchMode&quot; class=&quot;headerlink&quot; title=&quot;launchMode&quot;&gt;&lt;/a&gt;launchMode&lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;standard&lt;br&gt;默认的启动方式，每次都会创建一个活
+      简单介绍下在 Android 中的四种 activity 启动模式。
     
     </summary>
     
