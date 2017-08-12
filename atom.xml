@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.dujianping.com/"/>
-  <updated>2017-08-12T08:33:55.000Z</updated>
+  <updated>2017-08-12T08:54:28.000Z</updated>
   <id>http://www.dujianping.com/</id>
   
   <author>
@@ -16,18 +16,59 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>重拾 DSA 之队列</title>
+    <link href="http://www.dujianping.com/2017/08/12/%E9%87%8D%E6%8B%BE-DSA-%E4%B9%8B%E9%98%9F%E5%88%97/"/>
+    <id>http://www.dujianping.com/2017/08/12/重拾-DSA-之队列/</id>
+    <published>2017-08-12T08:40:19.000Z</published>
+    <updated>2017-08-12T08:54:28.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>下面是 wikipedia 对于队列的定义：</p>
+<blockquote>
+<p><strong>队列</strong>又称为伫列（queue），是先进先出（FIFO, First In First Out）的线性表。在具体应用中通常用链表或者数组来实现。队列只允许在后端（称为rear）进行插入操作，在前端（称为front）进行删除操作。</p>
+</blockquote>
+<p>队列和栈十分相似，不同点在于栈是 Last In First Out，而队列是 First In First Out。</p>
+<p>这里使用 LinkedList 存储数据。</p>
+<ul>
+<li>添加一个元素</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(T t)</span> </span>&#123;</div><div class="line">	mList.addLast(t);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>移除元素</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">pop</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(!mList.isEmpty()) &#123;</div><div class="line">		mList.removeFirst();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>获取队列元素</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> T <span class="title">getHead</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">return</span> mList.getFirst();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><a href="https://github.com/lucien623/DSA_Review/blob/master/Queue.java" target="_blank" rel="external">Source Code</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      本文主要介绍了栈的基本知识。
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.dujianping.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="DSA" scheme="http://www.dujianping.com/tags%C3%9F/DSA/"/>
+    
+  </entry>
+  
+  <entry>
     <title>重拾 DSA 之栈</title>
     <link href="http://www.dujianping.com/2017/08/12/%E9%87%8D%E6%8B%BE-DSA-%E4%B9%8B%E6%A0%88/"/>
     <id>http://www.dujianping.com/2017/08/12/重拾-DSA-之栈/</id>
     <published>2017-08-12T08:15:03.000Z</published>
-    <updated>2017-08-12T08:33:55.000Z</updated>
+    <updated>2017-08-12T08:47:22.000Z</updated>
     
     <content type="html"><![CDATA[<p>下面是 wikipedia 对于栈的定义：</p>
 <blockquote>
 <p><strong>堆栈</strong> （英语：stack），也可直接称栈（港澳台作堆叠），在计算机科学中，是一种特殊的串列形式的数据结构，它的特殊之处在于只能允许在链接串列或阵列的一端（称为堆叠顶端指标，英语：top）进行加入数据（英语：push）和输出数据（英语：pop）的运算。另外栈也可以用一维数组或连结串列的形式来完成。<br>由于堆叠数据结构只允许在一端进行操作，因而按照后进先出（LIFO, Last In First Out）的原理运作。</p>
 </blockquote>
 <p>简单示意图：<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Data_stack.svg/391px-Data_stack.svg.png" alt=""></p>
-<p>这里使用 LinkedList 存储数据</p>
+<p>这里使用 LinkedList 存储数据。</p>
 <ul>
 <li>入栈</li>
 </ul>
@@ -37,7 +78,7 @@
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">pop</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(!mList.isEmpty()) &#123;</div><div class="line">		mList.removeFirst();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <ul>
-<li>获取栈顶数据</li>
+<li>获取栈顶元素</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> T <span class="title">getPop</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">return</span> mList.getFirst();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p><a href="https://github.com/lucien623/DSA_Review/blob/master/Stack.java" target="_blank" rel="external">Source Code</a></p>
