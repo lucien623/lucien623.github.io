@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.dujianping.com/"/>
-  <updated>2017-08-12T08:55:26.000Z</updated>
+  <updated>2017-08-17T15:15:22.000Z</updated>
   <id>http://www.dujianping.com/</id>
   
   <author>
@@ -14,6 +14,20 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>离职</title>
+    <link href="http://www.dujianping.com/2017/08/17/%E7%A6%BB%E8%81%8C/"/>
+    <id>http://www.dujianping.com/2017/08/17/离职/</id>
+    <published>2017-08-17T15:15:22.000Z</published>
+    <updated>2017-08-17T15:15:22.000Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>重拾 DSA 之队列</title>
