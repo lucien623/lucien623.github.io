@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.dujianping.com/"/>
-  <updated>2018-05-20T10:03:51.352Z</updated>
+  <updated>2018-05-23T11:27:06.267Z</updated>
   <id>http://www.dujianping.com/</id>
   
   <author>
@@ -14,6 +14,40 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>重拾 DSA 排序算法之冒泡排序</title>
+    <link href="http://www.dujianping.com/2018/05/23/%E9%87%8D%E6%8B%BE-DSA-%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E4%B9%8B%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F/"/>
+    <id>http://www.dujianping.com/2018/05/23/重拾-DSA-排序算法之冒泡排序/</id>
+    <published>2018-05-23T10:36:06.000Z</published>
+    <updated>2018-05-23T11:27:06.267Z</updated>
+    
+    <content type="html"><![CDATA[<p>下面是 wikipedia 对于冒泡排序的概括：</p>
+<blockquote>
+<p>Bubble sort, sometimes referred to as sinking sort, is a simple sorting algorithm that repeatedly steps through the list to be sorted, compares each pair of adjacent items and swaps them if they are in the wrong order. The pass through the list is repeated until no swaps are needed, which indicates that the list is sorted. The algorithm, which is a comparison sort, is named for the way smaller or larger elements “bubble” to the top of the list. Although the algorithm is simple, it is too slow and impractical for most problems even when compared to insertion sort.[2] Bubble sort can be practical if the input is in mostly sorted order with some out-of-order elements nearly in position.</p>
+</blockquote>
+<p>简而言之呢就是相领元素的比较，下面还是来自 wikipedia 的一张图，很直观了：<br><img src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Bubble-sort-example-300px.gif" alt=""> </p>
+<p>不妨假设我们有这样一个数组 int list[] = {5, 1, 4, 2, 8};<br>那么冒泡排序的步骤就如下:</p>
+<p>第一趟：<br>{<strong>5</strong>, <strong>1</strong>, 4, 2, 8} -&gt; {<strong>1</strong>, <strong>5</strong>, 4, 2, 8}, 5 &gt; 1, 交换位置;<br>{1, <strong>5</strong>, <strong>4</strong>, 2, 8} -&gt; {1, <strong>4</strong>, <strong>5</strong>, 2, 8}, 5 &gt; 4, 交换位置;<br>{1, 4, <strong>5</strong>, <strong>2</strong>, 8} -&gt; {1, 4, <strong>2</strong>, <strong>5</strong>, 8}, 5 &gt; 2, 交换位置;<br>{1, 4, 2, <strong>5</strong>, <strong>8</strong>} -&gt; {1, 4, 2, <strong>5</strong>, <strong>8</strong>}, 5 &lt; 8, 位置不变;<br>所以第一趟排序下来的数组顺序是 {1, 4, 2, 5, 8}，此时数组中最大的数 <strong>8</strong> 已经在末尾。</p>
+<p>第二趟：<br>{<strong>1</strong>, <strong>4</strong>, 2, 5, 8} -&gt; {<strong>1</strong>, <strong>4</strong>, 2, 5, 8}, 1 &lt; 4, 位置不变;<br>{1, <strong>4</strong>, <strong>2</strong>, 5, 8} -&gt; {1, <strong>2</strong>, <strong>4</strong>, 5, 8}, 4 &gt; 2, 交换位置;<br>{1, 2, <strong>4</strong>, <strong>5</strong>, 8} -&gt; {1, 2, <strong>4</strong>, <strong>5</strong>, 8}, 4 &lt; 5, 位置不变;<br>第二趟排序下来数组中第二大的数已经在倒数第二的位置。</p>
+<p>第三趟：<br>{<strong>1</strong>, <strong>2</strong>, 4, 5, 8} -&gt; {<strong>1</strong>, <strong>2</strong>, 4, 5, 8}, 1 &lt; 2, 位置不变;<br>{1, <strong>2</strong>, <strong>4</strong>, 5, 8} -&gt; {1, <strong>2</strong>, <strong>4</strong>, 5, 8}, 2 &lt; 4, 位置不变;</p>
+<p>第四趟：<br>{<strong>1</strong>, <strong>2</strong>, 4, 5, 8} -&gt; {<strong>1</strong>, <strong>2</strong>, 4, 5, 8}, 1 &lt; 2, 位置不变;</p>
+<p>以下是代码实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span>[] bubbleSort(<span class="keyword">int</span>[] list) &#123;</div><div class="line">		<span class="keyword">int</span> length = list.length;</div><div class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) &#123;</div><div class="line">			<span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; length - i - <span class="number">1</span>; j++) &#123;</div><div class="line">				<span class="keyword">if</span>(list[j] &gt; list[j + <span class="number">1</span>]) &#123;</div><div class="line">					<span class="keyword">int</span> temp = list[j];</div><div class="line">					list[j] = list[j + <span class="number">1</span>];</div><div class="line">					list[j + <span class="number">1</span>] = temp;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		<span class="keyword">return</span> list;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<p>冒泡排序的效率并不高，时间复杂度为 O(n^2)；</p>
+]]></content>
+    
+    <summary type="html">
+    
+      面试手写冒泡排序写错了，惭愧。
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.dujianping.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="DSA" scheme="http://www.dujianping.com/tags%C3%9F/DSA/"/>
+    
+  </entry>
   
   <entry>
     <title>Android抽象布局</title>
