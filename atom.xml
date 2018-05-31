@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.dujianping.com/"/>
-  <updated>2018-05-29T12:06:41.802Z</updated>
+  <updated>2018-05-31T09:41:01.129Z</updated>
   <id>http://www.dujianping.com/</id>
   
   <author>
@@ -14,6 +14,36 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>重拾 DSA 排序算法之简单选择排序</title>
+    <link href="http://www.dujianping.com/2018/05/31/%E9%87%8D%E6%8B%BE-DSA-%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E4%B9%8B%E7%AE%80%E5%8D%95%E9%80%89%E6%8B%A9%E6%8E%92%E5%BA%8F/"/>
+    <id>http://www.dujianping.com/2018/05/31/重拾-DSA-排序算法之简单选择排序/</id>
+    <published>2018-05-31T09:18:26.000Z</published>
+    <updated>2018-05-31T09:41:01.129Z</updated>
+    
+    <content type="html"><![CDATA[<p>wikipedia:</p>
+<blockquote>
+<p>The algorithm divides the input list into two parts: the sublist of items already sorted, which is built up from left to right at the front (left) of the list, and the sublist of items remaining to be sorted that occupy the rest of the list. Initially, the sorted sublist is empty and the unsorted sublist is the entire input list. The algorithm proceeds by finding the smallest (or largest, depending on sorting order) element in the unsorted sublist, exchanging (swapping) it with the leftmost unsorted element (putting it in sorted order), and moving the sublist boundaries one element to the right.</p>
+</blockquote>
+<p>概括就是将数列分为两部分，分别是排好序和未排好序部分，每次取未排序部分的最大值或者最小值，放到已排序部分的数列中。</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/9/94/Selection-Sort-Animation.gif" alt=""></p>
+<p>以下是代码实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">simpleSelectionSort</span><span class="params">(<span class="keyword">int</span>[] array)</span> </span>&#123;</div><div class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; array.length - <span class="number">1</span>; i++) &#123;</div><div class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> j = i + <span class="number">1</span>; j &lt; array.length; j++) &#123;</div><div class="line">			<span class="keyword">if</span>(array[i] &gt; array[j]) &#123;</div><div class="line">				<span class="keyword">int</span> temp = array[i];</div><div class="line">				array[i] = array[j];</div><div class="line">				array[j] = temp;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>该算法的时间复杂度为 O(n^2)。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      关于简答选择排序的简单介绍和 Java 实现。
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.dujianping.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="DSA" scheme="http://www.dujianping.com/tags%C3%9F/DSA/"/>
+    
+  </entry>
   
   <entry>
     <title>重拾 DSA 排序算法之快速排序</title>
