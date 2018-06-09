@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.dujianping.com/"/>
-  <updated>2018-05-31T09:41:01.129Z</updated>
+  <updated>2018-06-09T08:22:27.075Z</updated>
   <id>http://www.dujianping.com/</id>
   
   <author>
@@ -14,6 +14,35 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>重拾 DSA 排序算法之插入排序</title>
+    <link href="http://www.dujianping.com/2018/06/09/%E9%87%8D%E6%8B%BE-DSA-%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F/"/>
+    <id>http://www.dujianping.com/2018/06/09/重拾-DSA-排序算法之插入排序/</id>
+    <published>2018-06-09T07:50:47.000Z</published>
+    <updated>2018-06-09T08:22:27.075Z</updated>
+    
+    <content type="html"><![CDATA[<p>wikipedia:</p>
+<blockquote>
+<p>Insertion sort iterates, consuming one input element each repetition, and growing a sorted output list. At each iteration, insertion sort removes one element from the input data, finds the location it belongs within the sorted list, and inserts it there. It repeats until no input elements remain.</p>
+</blockquote>
+<p>意思就是从输入的元素里每次取出一个插入到有序的列表中，直到取完所有的元素为止。<br><img src="https://upload.wikimedia.org/wikipedia/commons/0/0f/Insertion-sort-example-300px.gif" alt=""></p>
+<p>以下是代码实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">insertionSort</span><span class="params">(<span class="keyword">int</span>[] array)</span> </span>&#123;</div><div class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;  i &lt; array.length - <span class="number">1</span>; i++) &#123;</div><div class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> j = i + <span class="number">1</span>; j &gt; <span class="number">0</span>; j--) &#123;</div><div class="line">			<span class="keyword">if</span>(array[j - <span class="number">1</span>] &lt;= array[j])</div><div class="line">				<span class="keyword">break</span>;</div><div class="line">			<span class="keyword">int</span> temp = array[j - <span class="number">1</span>];</div><div class="line">			array[j - <span class="number">1</span>] = array[j];</div><div class="line">			array[j] = temp;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>算法的时间复杂度为 O(n^2)。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      关于插入排序的介绍和 Java 实现。
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.dujianping.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="DSA" scheme="http://www.dujianping.com/tags%C3%9F/DSA/"/>
+    
+  </entry>
   
   <entry>
     <title>重拾 DSA 排序算法之简单选择排序</title>
