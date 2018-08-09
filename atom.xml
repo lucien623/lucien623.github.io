@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.dujianping.com/"/>
-  <updated>2018-08-07T15:04:27.593Z</updated>
+  <updated>2018-08-09T13:51:58.120Z</updated>
   <id>http://www.dujianping.com/</id>
   
   <author>
@@ -16,15 +16,32 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>数据库事务隔离</title>
-    <link href="http://www.dujianping.com/2018/08/07/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB/"/>
-    <id>http://www.dujianping.com/2018/08/07/数据库事务隔离/</id>
-    <published>2018-08-07T15:01:50.000Z</published>
-    <updated>2018-08-07T15:04:27.593Z</updated>
+    <title>数据库事务学习笔记</title>
+    <link href="http://www.dujianping.com/2018/08/09/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    <id>http://www.dujianping.com/2018/08/09/数据库事务学习笔记/</id>
+    <published>2018-08-09T13:17:28.000Z</published>
+    <updated>2018-08-09T13:51:58.120Z</updated>
+    
+    <content type="html"><![CDATA[<p>数据库事务（简称事务）：是数据库管理系统（Database Managment System 简称DBMS）执行过程中的一个逻辑单位，是由有限的数据库操作序列构成。</p>
+<p>事务的特性：</p>
+<ul>
+<li>原子性：事务作为一个整体执行，包含在其中的数据库操作要么全部执行，要么不执行。</li>
+<li>一致性：事务要确保数据库由一个一致性的状态变成另一个一致性的状态。</li>
+<li>隔离性：允许多个事务并发进行，并且执行过程中一个事务不应受另外一个事务影响。</li>
+<li>持久性：已经提交的事务对数据库的修改应该永远保存在数据库中。</li>
+</ul>
+<p>事务的四种隔离：</p>
+<ul>
+<li>读未提交（Read uncommitted）：允许“脏读”，即事务可以读到其它事务还未提交的修改。</li>
+<li>读已提交（Read committed）：只能读取到已经提交的数据。</li>
+<li>可重复读（Repeatable reads）：即在事务中的查询和开始是一致的。</li>
+<li>可串形化（Serializable）：在基于锁机制并发控制的DBMS实现可串行化，要求在选定对象上的读锁和写锁保持直到事务结束后才能释放。在SELECT的查询中使用一个“WHERE”子句来描述一个范围时应该获得一个“范围锁”（range-locks）。</li>
+</ul>
+]]></content>
     
     <summary type="html">
     
-      本文主要介绍了四种事务隔离级别和安全问题。
+      本文主要是学习数据库事务时的笔记。
     
     </summary>
     
