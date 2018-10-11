@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.dujianping.com/"/>
-  <updated>2018-08-11T15:06:59.991Z</updated>
+  <updated>2018-10-11T03:30:19.506Z</updated>
   <id>http://www.dujianping.com/</id>
   
   <author>
@@ -16,11 +16,105 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>我的简历</title>
+    <link href="http://www.dujianping.com/2018/10/11/%E6%88%91%E7%9A%84%E7%AE%80%E5%8E%86/"/>
+    <id>http://www.dujianping.com/2018/10/11/我的简历/</id>
+    <published>2018-10-11T02:53:12.000Z</published>
+    <updated>2018-10-11T03:30:19.506Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="个人信息"><a href="#个人信息" class="headerlink" title="个人信息"></a>个人信息</h2><ul>
+<li>杜健平/男/1993.06</li>
+<li>工作经验：3 年</li>
+<li>期望职位：Android 开发工程师</li>
+</ul>
+<h2 id="教育经历"><a href="#教育经历" class="headerlink" title="教育经历"></a>教育经历</h2><ul>
+<li>毕业院校：台州学院</li>
+<li>学历：本科</li>
+<li>专业：计算机科学与技术</li>
+</ul>
+<h2 id="联系方式"><a href="#联系方式" class="headerlink" title="联系方式"></a>联系方式</h2><ul>
+<li>Email：jianpingduo@163.com</li>
+</ul>
+<h2 id="技能清单"><a href="#技能清单" class="headerlink" title="技能清单"></a>技能清单</h2><ul>
+<li>良好的 Java 基础，熟悉面向对象的思想，比较好的代码风格</li>
+<li>熟悉常用的 Java 设计模式</li>
+<li>熟悉 Android 事件分发，Handler 机制等基础知识</li>
+<li>熟悉 Android UI 库，并具有一定的编写自定义控件能力</li>
+<li>熟悉 Android 下的网络通信以及数据解析</li>
+<li>熟练使用一些常用的开源框架，比如 Imageloader、Retrofit、ButterKnife 等，了解部分开源框架的原理</li>
+<li>熟练使用 android studio 开发工具以及 svn 版本控制工具</li>
+<li>熟悉 MVC 模式，对 Android 的 MVP 模式有一定的了解</li>
+<li>对性能优化有一定的理解，注意内存泄漏问题</li>
+<li>具备独立开发的能力，有项目重构经验</li>
+<li>了解数据库 MySQL</li>
+<li>了解 Java 后端开发，如 Spring、SpringMVC、MyBatis 等框架的使用</li>
+</ul>
+<h2 id="工作经历"><a href="#工作经历" class="headerlink" title="工作经历"></a>工作经历</h2><h2 id="杭州炬合网络科技有限公司-（2017-年-9-月-2017-年-12-月-2018-年-4-月-～-2018-年-5-月）"><a href="#杭州炬合网络科技有限公司-（2017-年-9-月-2017-年-12-月-2018-年-4-月-～-2018-年-5-月）" class="headerlink" title="杭州炬合网络科技有限公司 （2017 年 9 月 ~  2017 年 12 月 | 2018 年 4 月 ～ 2018 年 5 月）"></a>杭州炬合网络科技有限公司 （2017 年 9 月 ~  2017 年 12 月 | 2018 年 4 月 ～ 2018 年 5 月）</h2><h3 id="现金斗士项目"><a href="#现金斗士项目" class="headerlink" title="现金斗士项目"></a>现金斗士项目</h3><p>下载地址：<a href="https://moneyboom.cn/download/" target="_blank" rel="external">https://moneyboom.cn/download/</a></p>
+<h4 id="项目职责"><a href="#项目职责" class="headerlink" title="项目职责"></a>项目职责</h4><p>独立负责现金斗士项目的开发以及版本迭代工作。</p>
+<h4 id="项目描述"><a href="#项目描述" class="headerlink" title="项目描述"></a>项目描述</h4><p>现金斗士是属于一款现金贷产品，用户可以在注册并通过实名、手机运营商等认证之后，绑定银行卡在平台上借款，用户申请的借款订单经过风控审核之后决定是否下款，下款成功的用户还可以选择提前还款。</p>
+<h4 id="具体成果"><a href="#具体成果" class="headerlink" title="具体成果"></a>具体成果</h4><ul>
+<li><p>框架搭建。因为应用的设计上不是特别复杂，流程简单，考虑到以后的业务也不会有太大的变化，选择了按照组件类型（activity、fragment、entity…）来区分的这么一种比较普遍的架构，项目框架整体看上去简单清晰易懂。项目引入了 Imageloader 加载图片，ButterKnife 进行 View 注入，OkHttp + Retrofit 作为网络框架，bugly 收集错误日志，友盟统计应用，并把这些框架合理地封装到项目里。</p>
+</li>
+<li><p>应用的开发完成及测试。根据设计图独立完成了项目的开发，并设计测试用例安排人员进行测试，根据测试反馈完善产品，最终达成可发布版本。</p>
+</li>
+</ul>
+<h4 id="应用截图"><a href="#应用截图" class="headerlink" title="应用截图"></a>应用截图</h4><table><br><td><br>    <img src="http://ohsz38osq.bkt.clouddn.com/Screenshot_1515398580.png"><br></td><br><td><br>    <img src="http://ohsz38osq.bkt.clouddn.com/Screenshot_1515398783.png"><br></td><br><td><br>    <img src="http://ohsz38osq.bkt.clouddn.com/Screenshot_1515399146.png"><br></td><br></table>
+
+<h2 id="杭州多少科技有限公司（-2016-年-4-月-2017-年-8-月）"><a href="#杭州多少科技有限公司（-2016-年-4-月-2017-年-8-月）" class="headerlink" title="杭州多少科技有限公司（ 2016 年 4 月 ~ 2017 年 8 月）"></a>杭州多少科技有限公司（ 2016 年 4 月 ~ 2017 年 8 月）</h2><h3 id="多少项目"><a href="#多少项目" class="headerlink" title="多少项目"></a>多少项目</h3><p>下载地址：<a href="http://www.doshr.com/" target="_blank" rel="external">http://www.doshr.com/</a></p>
+<h4 id="项目职责-1"><a href="#项目职责-1" class="headerlink" title="项目职责"></a>项目职责</h4><p>作为主程负责多少项目的版本迭代，设计项目架构以及代码的重构优化，参与项目的需求评审以及 UI 设计讨论，配合后端完成接口调试，根据 UI 设计完成 App 的开发和测试，并根据测试结果以及用户的反馈进行产品改善和 bug 修复。</p>
+<h4 id="项目描述-1"><a href="#项目描述-1" class="headerlink" title="项目描述"></a>项目描述</h4><p>多少是一个兼具买卖家功能的移动电商平台。卖家可以在这个平台里发布、兜售自己产品或者服务，创建自己的店铺，在店铺中发布商品、管理商品库存，发布帖子、优惠券，创建自己的客户，还具有创建订单、点单收银以及管理订单等功能；买家可以在别人的店铺中直接购买或者通过购物车购买商品、管理自己的订单等功能。</p>
+<h4 id="具体成果-1"><a href="#具体成果-1" class="headerlink" title="具体成果"></a>具体成果</h4><ul>
+<li><p>Model 重建。接触项目初期发现 Model 的构建不合理，存在许多不同业务的接口实体类使用的是同一个，形成了好几个巨无霸式的类，所以首先对 Model 进行了拆分重新构建。</p>
+</li>
+<li><p>将传统的 JSON 解析方式改成了使用 Gson 对 JSON 数据进行解析，节省了大量的代码和时间，也减少了这种复杂解析可能带来的错误。</p>
+</li>
+<li><p>同步获取消息数据导致 app 严重卡顿问题的解决。由原来的同步获取消息数据改为在用户登录时首先采用异步的方式加数据加载到内存中，采用线程安全的 ConcurrentHashMap 保存消息数据，每当消息变化时，先更新 ConcurrentHashMap 的数据，再采用异步的方式去更新保存在本地的消息数据，解决了原来获取消息等待时间长，卡顿的问题，用户体验得到很大的提升。</p>
+</li>
+<li><p>比较复杂布局。比较典型就是帖子部分，在一个帖子中最多可以包含五种不同类型的布局（见下图 or 下载 app 体验），文字、商品布局、帖子布局、优惠券布局以及优惠礼包布局，发布帖子的时候还可以根据光标位置插入不同的布局，还有商品布局等等。</p>
+</li>
+<li><p>分模块。将项目根据不同的功能分成几个模块，各个模块还是按 MVC 的架构组成，分模块的好处在于将来可以按照不同的业务把具有共性的代码抽取出来作为公共库使用，另一个好处就是可以尝试新的架构。</p>
+</li>
+<li><p>优化。逻辑优化，重写 Activity 基类，统一初始化流程，review 代码，剔除不合理逻辑并重写；代码量优化，引入 ButterKnife 框架，省去 findViewById，抽取共用代码和布局，减少代码量；代码规范，统一代码规范和命名规范等。</p>
+</li>
+<li><p>Android 6.0 以上动态权限申请。项目中对于 Android 6.0 以上的动态权限申请做了兼容。</p>
+</li>
+</ul>
+<p>　　<br> <br> </p>
+<h4 id="应用截图-1"><a href="#应用截图-1" class="headerlink" title="应用截图"></a>应用截图</h4><table><br><td><br>    <img src="http://ohsz38osq.bkt.clouddn.com/QQ20170427-2.jpg"><br></td><br><td><br>    <img src="http://ohsz38osq.bkt.clouddn.com/QQ20170427-1.jpg"><br></td><br><td><br>    <img src="http://ohsz38osq.bkt.clouddn.com/QQ20170427-0.jpg"><br></td><br></table>
+
+<h2 id="杭州快定网络股份有限公司（-2015-年-7-月-2016-年-3-月-）"><a href="#杭州快定网络股份有限公司（-2015-年-7-月-2016-年-3-月-）" class="headerlink" title="杭州快定网络股份有限公司（ 2015 年 7 月 ~ 2016 年 3 月 ）"></a>杭州快定网络股份有限公司（ 2015 年 7 月 ~ 2016 年 3 月 ）</h2><h3 id="剑网三等手游的完美攻略项目"><a href="#剑网三等手游的完美攻略项目" class="headerlink" title="剑网三等手游的完美攻略项目"></a>剑网三等手游的完美攻略项目</h3><p>下载地址： <a href="http://a.gdown.baidu.com/data/wisegame/3b7d8bb3cf610b2b/jianwang3wanmeigonglue_213.apk?from=a110" target="_blank" rel="external">http://a.gdown.baidu.com/data/wisegame/3b7d8bb3cf610b2b/jianwang3wanmeigonglue_213.apk?from=a110</a></p>
+<h4 id="项目职责-2"><a href="#项目职责-2" class="headerlink" title="项目职责"></a>项目职责</h4><p>开发各种手游攻略的 app，参与项目的需求评审以及 UI 设计讨论，根据 UI 设计完成 app 的开发和测试，根据测试以及用户的反馈进行产品改善和 bug 修复。</p>
+<h4 id="项目描述-2"><a href="#项目描述-2" class="headerlink" title="项目描述"></a>项目描述</h4><p>完美攻略是一种手游资讯类的 app，主要用于展示手游相关的新闻，以及一些衍生出来的东西，比如说攻略，新手指引，手游相关的图片浏览之类的。</p>
+<h4 id="具体成果-2"><a href="#具体成果-2" class="headerlink" title="具体成果"></a>具体成果</h4><ul>
+<li>独立开发完成各个完美攻略手游 app。</li>
+<li>使用了 RecyclerView 和 CardView 的组合将卡片式布局引入项目中展示，以及其他一些比较新式布局的使用。</li>
+<li>抽取出 Adapter 和 Activity 中一些重复的代码形成 Base 类，减少类中的大量代码。</li>
+</ul>
+<p><br> <br> </p>
+<h4 id="应用截图-2"><a href="#应用截图-2" class="headerlink" title="应用截图"></a>应用截图</h4><table><br><td><br>    <img src="http://ohsz38osq.bkt.clouddn.com/jw1.jpg"><br></td><br><td><br>    <img src="http://ohsz38osq.bkt.clouddn.com/jw2.jpg"><br></td><br><td><br>    <img src="http://ohsz38osq.bkt.clouddn.com/jw3.jpg"><br></td><br></table>
+
+<h4 id="其它完美攻略"><a href="#其它完美攻略" class="headerlink" title="其它完美攻略"></a>其它完美攻略</h4><p><a href="http://sj.qq.com/myapp/detail.htm?apkName=com.kiding.perfecttools.qnyh" target="_blank" rel="external">倩女幽魂-完美攻略</a>等</p>
+]]></content>
+    
+    <summary type="html">
+    
+      个人开发简历。
+    
+    </summary>
+    
+      <category term="技术" scheme="http://www.dujianping.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="简历" scheme="http://www.dujianping.com/tags%C3%9F/%E7%AE%80%E5%8E%86/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Java反射机制</title>
     <link href="http://www.dujianping.com/2018/08/11/Java%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/"/>
     <id>http://www.dujianping.com/2018/08/11/Java反射机制/</id>
     <published>2018-08-11T13:53:45.000Z</published>
-    <updated>2018-08-11T15:06:59.991Z</updated>
+    <updated>2018-08-19T07:32:30.887Z</updated>
     
     <content type="html"><![CDATA[<h3 id="什么是反射？"><a href="#什么是反射？" class="headerlink" title="什么是反射？"></a>什么是反射？</h3><blockquote>
 <p>Reflection is a feature in the Java programming language. It allows an executing Java program to examine or “introspect” upon itself, and manipulate internal properties of the program. For example, it’s possible for a Java class to obtain the names of all its members and display them. — <a href="https://www.oracle.com/technetwork/articles/java/javareflection-1536171.html" target="_blank" rel="external">from oracle</a></p>
@@ -29,7 +123,7 @@
 <p>首先我们定义一个 Student 类：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</div><div class="line">	<span class="keyword">public</span> <span class="keyword">int</span> age;</div><div class="line">	<span class="keyword">protected</span> String name;</div><div class="line">	<span class="keyword">public</span> String gender;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">()</span> </span>&#123;</div><div class="line">		</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(<span class="keyword">int</span> age, String name, String gender)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.age = age;</div><div class="line">		<span class="keyword">this</span>.name = name;</div><div class="line">		<span class="keyword">this</span>.gender = gender;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> age;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.age = age;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> name;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.name = name;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getGender</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> gender;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setGender</span><span class="params">(String gender)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.gender = gender;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <h3 id="获取-Class-对象"><a href="#获取-Class-对象" class="headerlink" title="获取 Class 对象"></a>获取 Class 对象</h3><p>获取 Class 对象有如下三种方式：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Class clsA = Class.forName(<span class="string">"com.djp.demo.Student"</span>);</div><div class="line">Class clsB = Student.class;</div><div class="line">Class clsC = <span class="keyword">new</span> Student().getClass();</div></pre></td></tr></table></figure></p>
 <h3 id="获取方法"><a href="#获取方法" class="headerlink" title="获取方法"></a>获取方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getMethods</span><span class="params">(Class cls)</span> </span>&#123;</div><div class="line">	Method[] methods = cls.getDeclaredMethods();</div><div class="line">	<span class="keyword">for</span> (Method method : methods) &#123;</div><div class="line">		System.out.println(method.toString());</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>通过<code>getDeclaredMethods</code>方法可以返回类或者接口的所有方法，包括 public, protected, defalut, and private，但无法获取到继承的方法。打印信息如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">public java.lang.String com.djp.demo.Student.getName()</div><div class="line">public void com.djp.demo.Student.setName(java.lang.String)</div><div class="line">public int com.djp.demo.Student.getAge()</div><div class="line">public java.lang.String com.djp.demo.Student.getGender()</div><div class="line">public void com.djp.demo.Student.setGender(java.lang.String)</div><div class="line">public void com.djp.demo.Student.setAge(int)</div></pre></td></tr></table></figure></p>
+<p>通过<code>getDeclaredMethods()</code>方法可以返回类或者接口的所有方法，包括 public, protected, defalut, and private，但无法获取到继承的方法。打印信息如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">public java.lang.String com.djp.demo.Student.getName()</div><div class="line">public void com.djp.demo.Student.setName(java.lang.String)</div><div class="line">public int com.djp.demo.Student.getAge()</div><div class="line">public java.lang.String com.djp.demo.Student.getGender()</div><div class="line">public void com.djp.demo.Student.setGender(java.lang.String)</div><div class="line">public void com.djp.demo.Student.setAge(int)</div></pre></td></tr></table></figure></p>
 <p>另一个<code>getMethods()</code>方法也可以获取到类和接口的所有方法，于上面方法不同的是调用这个方法只会返回定义为 public 的 Method 对象，包括继承的方法。</p>
 <h3 id="创建实例"><a href="#创建实例" class="headerlink" title="创建实例"></a>创建实例</h3><p>有两种方法可以创建实例，第一种是直接通过 class 对象的 newInstance 创建：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Class clsA = Class.forName(<span class="string">"com.djp.demo.Student"</span>);</div><div class="line">clsA.newInstance();</div></pre></td></tr></table></figure></p>
 <p>第二种通过构造器创建：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Constructor constructor = cls.getConstructor(<span class="keyword">int</span>.class, String.class, String.class);</div><div class="line">Student student = (Student) constructor.newInstance(<span class="number">18</span>, <span class="string">"lucien"</span>, <span class="string">"man"</span>);</div></pre></td></tr></table></figure></p>
@@ -715,30 +809,6 @@
     
       &lt;p&gt;这是一个开始，开始寻找一个新的开始。&lt;/p&gt;
 
-    
-    </summary>
-    
-      <category term="生活" scheme="http://www.dujianping.com/categories/%E7%94%9F%E6%B4%BB/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>我有一个梦想</title>
-    <link href="http://www.dujianping.com/2017/01/05/%E6%88%91%E6%9C%89%E4%B8%80%E4%B8%AA%E6%A2%A6%E6%83%B3/"/>
-    <id>http://www.dujianping.com/2017/01/05/我有一个梦想/</id>
-    <published>2017-01-05T15:31:31.000Z</published>
-    <updated>2017-07-10T08:58:52.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>我有一个梦想，那就是四处游荡，去往每一处我向往的地方。我希望体验不同的生活，每到一处就找一份工作，这份工作不必太辛劳，能有自己的时间，normal的工资，一年或者两年之后，go to the next one。</p>
-<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="//music.163.com/outchain/player?type=2&id=26590192&auto=0&height=66"></iframe>
-
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;我有一个梦想，那就是四处游荡，去往每一处我向往的地方。我希望体验不同的生活，每到一处就找一份工作，这份工作不必太辛劳，能有自己的时间，normal的工资，一年或者两年之后，go to the next one。&lt;/p&gt;
-&lt;iframe frameborder=&quot;no&quot; bo
     
     </summary>
     
