@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-10-12T11:01:50.380Z</updated>
+  <updated>2019-10-13T02:23:33.721Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,12 +20,29 @@
     <link href="http://yoursite.com/2019/10/12/HandlerThread%E5%8E%9F%E7%90%86%E6%8E%A2%E6%9E%90/"/>
     <id>http://yoursite.com/2019/10/12/HandlerThread原理探析/</id>
     <published>2019-10-12T11:01:50.000Z</published>
-    <updated>2019-10-12T11:01:50.380Z</updated>
+    <updated>2019-10-13T02:23:33.721Z</updated>
+    
+    <content type="html"><![CDATA[<p><code>HandlerThread</code>是一个可以执行多个异步操作，而不需要创建多线程的类。<code>HandlerThread</code>继承于<code>Thread</code>，是<code>Thread</code>的子类。</p>
+<p>如何使用<code>HandlerThread</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> Handler myHandler;</div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startHandlerThread</span><span class="params">()</span> </span>&#123;</div><div class="line">    HandlerThread handlerThread = <span class="keyword">new</span> HandlerThread(<span class="string">"handlerThread"</span>);</div><div class="line">    handlerThread.start();</div><div class="line">    myHandler = <span class="keyword">new</span> Handler(handlerThread.getLooper()) &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">            <span class="comment">//执行耗时操作</span></div><div class="line">            <span class="keyword">switch</span> (msg.what) &#123;</div><div class="line">                <span class="keyword">default</span>:</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果我们要执行某一个耗时操作，就只需要通过<code>myHandler</code>调用<code>sendMessage()</code>方法可以了。<br>那么他是如何实现的呢？首先我们要知道它是一个继承于<code>Thread</code>的类，那么当调用<code>start()</code>方法时就会开启线程，然后执行<code>run()</code>方法，接下来看这个方法是如何被重写的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">    mTid = Process.myTid();</div><div class="line">    Looper.prepare();</div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        mLooper = Looper.myLooper();</div><div class="line">        notifyAll();</div><div class="line">    &#125;</div><div class="line">    Process.setThreadPriority(mPriority);</div><div class="line">    onLooperPrepared();</div><div class="line">    Looper.loop();</div><div class="line">    mTid = -<span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其实就是在子线程里创建一个<code>Looper</code>对象，然后调用<code>loop()</code>方法循环获取消息，那么为什么<code>handleMessage(Message msg)</code>会在子线程里执行呢，我们可以看到其实在构建<code>Handler</code>的时候通过<code>handlerThread.getLooper()</code>将子线程的<code>looper</code>传入了，理所当然<code>loop()</code>中<code>msg.target.dispatchMessage(msg);</code>也会在子线程中执行。</p>
+<p>其实在<code>IntentService</code>内部就是用了<code>HandlerThread</code>来实现的，不妨来看看它的源码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">IntentService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> Looper mServiceLooper;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> ServiceHandler mServiceHandler;</div><div class="line">    <span class="keyword">private</span> String mName;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> mRedelivery;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ServiceHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">ServiceHandler</span><span class="params">(Looper looper)</span> </span>&#123;</div><div class="line">            <span class="keyword">super</span>(looper);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">            onHandleIntent((Intent)msg.obj);</div><div class="line">            stopSelf(msg.arg1);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Creates an IntentService.  Invoked by your subclass's constructor.</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> name Used to name the worker thread, important only for debugging.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">IntentService</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>();</div><div class="line">        mName = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Sets intent redelivery preferences.  Usually called from the constructor</div><div class="line">     * with your preferred semantics.</div><div class="line">     *</div><div class="line">     * &lt;p&gt;If enabled is true,</div><div class="line">     * &#123;<span class="doctag">@link</span> #onStartCommand(Intent, int, int)&#125; will return</div><div class="line">     * &#123;<span class="doctag">@link</span> Service#START_REDELIVER_INTENT&#125;, so if this process dies before</div><div class="line">     * &#123;<span class="doctag">@link</span> #onHandleIntent(Intent)&#125; returns, the process will be restarted</div><div class="line">     * and the intent redelivered.  If multiple Intents have been sent, only</div><div class="line">     * the most recent one is guaranteed to be redelivered.</div><div class="line">     *</div><div class="line">     * &lt;p&gt;If enabled is false (the default),</div><div class="line">     * &#123;<span class="doctag">@link</span> #onStartCommand(Intent, int, int)&#125; will return</div><div class="line">     * &#123;<span class="doctag">@link</span> Service#START_NOT_STICKY&#125;, and if the process dies, the Intent</div><div class="line">     * dies along with it.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setIntentRedelivery</span><span class="params">(<span class="keyword">boolean</span> enabled)</span> </span>&#123;</div><div class="line">        mRedelivery = enabled;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// <span class="doctag">TODO:</span> It would be nice to have an option to hold a partial wakelock</span></div><div class="line">        <span class="comment">// during processing, and to have a static startService(Context, Intent)</span></div><div class="line">        <span class="comment">// method that would launch the service &amp; hand off a wakelock.</span></div><div class="line"></div><div class="line">        <span class="keyword">super</span>.onCreate();</div><div class="line">        HandlerThread thread = <span class="keyword">new</span> HandlerThread(<span class="string">"IntentService["</span> + mName + <span class="string">"]"</span>);</div><div class="line">        thread.start();</div><div class="line"></div><div class="line">        mServiceLooper = thread.getLooper();</div><div class="line">        mServiceHandler = <span class="keyword">new</span> ServiceHandler(mServiceLooper);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStart</span><span class="params">(@Nullable Intent intent, <span class="keyword">int</span> startId)</span> </span>&#123;</div><div class="line">        Message msg = mServiceHandler.obtainMessage();</div><div class="line">        msg.arg1 = startId;</div><div class="line">        msg.obj = intent;</div><div class="line">        mServiceHandler.sendMessage(msg);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * You should not override this method for your IntentService. Instead,</div><div class="line">     * override &#123;<span class="doctag">@link</span> #onHandleIntent&#125;, which the system calls when the IntentService</div><div class="line">     * receives a start request.</div><div class="line">     * <span class="doctag">@see</span> android.app.Service#onStartCommand</div><div class="line">     */</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">onStartCommand</span><span class="params">(@Nullable Intent intent, <span class="keyword">int</span> flags, <span class="keyword">int</span> startId)</span> </span>&#123;</div><div class="line">        onStart(intent, startId);</div><div class="line">        <span class="keyword">return</span> mRedelivery ? START_REDELIVER_INTENT : START_NOT_STICKY;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</div><div class="line">        mServiceLooper.quit();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Unless you provide binding for your service, you don't need to implement this</div><div class="line">     * method, because the default implementation returns null.</div><div class="line">     * <span class="doctag">@see</span> android.app.Service#onBind</div><div class="line">     */</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="meta">@Nullable</span></div><div class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * This method is invoked on the worker thread with a request to process.</div><div class="line">     * Only one Intent is processed at a time, but the processing happens on a</div><div class="line">     * worker thread that runs independently from other application logic.</div><div class="line">     * So, if this code takes a long time, it will hold up other requests to</div><div class="line">     * the same IntentService, but it will not hold up anything else.</div><div class="line">     * When all requests have been handled, the IntentService stops itself,</div><div class="line">     * so you should not call &#123;<span class="doctag">@link</span> #stopSelf&#125;.</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> intent The value passed to &#123;<span class="doctag">@link</span></div><div class="line">     *               android.content.Context#startService(Intent)&#125;.</div><div class="line">     *               This may be null if the service is being restarted after</div><div class="line">     *               its process has gone away; see</div><div class="line">     *               &#123;<span class="doctag">@link</span> android.app.Service#onStartCommand&#125;</div><div class="line">     *               for details.</div><div class="line">     */</div><div class="line">    <span class="meta">@WorkerThread</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">onHandleIntent</span><span class="params">(@Nullable Intent intent)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们可以看到在<code>onCreate()</code>方法里创建了一个命名为<code>thread</code>的<code>HandlerThread</code>实例，同时也创建了一个<code>ServiceHandler</code>的实例，并将从<code>thread</code>里获取到的<code>looper</code>作为初始化参数传入，在<code>onStart()</code>方法中调用了<code>mServiceHandler.sendMessage(msg);</code>，再看<code>ServiceHandler</code>中的<code>handleMessage(Message msg)</code>方法中调用了<code>onHandleIntent((Intent)msg.obj);</code>，即我们要实现的抽象方法，该方法在子线程中执行。</p>
+<p><code>HanderThread</code>的优点在于我们可以不用重复创建线程执行异步操作，缺点也很明显，就是它是队列的形式执行异步任务。</p>
+]]></content>
     
     <summary type="html">
     
+      对 HandlerThread 原理的简要分析。
+    
     </summary>
     
+      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="android" scheme="http://yoursite.com/tags%C3%9F/android/"/>
     
   </entry>
   
@@ -34,7 +51,7 @@
     <link href="http://yoursite.com/2018/08/11/Java%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/"/>
     <id>http://yoursite.com/2018/08/11/Java反射机制/</id>
     <published>2018-08-11T13:53:45.000Z</published>
-    <updated>2018-08-19T07:32:30.887Z</updated>
+    <updated>2019-10-12T11:27:12.055Z</updated>
     
     <content type="html"><![CDATA[<h3 id="什么是反射？"><a href="#什么是反射？" class="headerlink" title="什么是反射？"></a>什么是反射？</h3><blockquote>
 <p>Reflection is a feature in the Java programming language. It allows an executing Java program to examine or “introspect” upon itself, and manipulate internal properties of the program. For example, it’s possible for a Java class to obtain the names of all its members and display them. — <a href="https://www.oracle.com/technetwork/articles/java/javareflection-1536171.html" target="_blank" rel="external">from oracle</a></p>
@@ -69,9 +86,9 @@
     <link href="http://yoursite.com/2018/08/09/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     <id>http://yoursite.com/2018/08/09/数据库事务学习笔记/</id>
     <published>2018-08-09T13:17:28.000Z</published>
-    <updated>2018-08-09T14:16:23.351Z</updated>
+    <updated>2019-10-12T11:40:58.376Z</updated>
     
-    <content type="html"><![CDATA[<p>数据库事务（简称事务）：是数据库管理系统（Database Managment System 简称DBMS）执行过程中的一个逻辑单位，是由有限的数据库操作序列构成。</p>
+    <content type="html"><![CDATA[<p>数据库事务（简称事务）：是数据库管理系统（Database Managment System 简称 DBMS）执行过程中的一个逻辑单位，是由有限的数据库操作序列构成。</p>
 <p>事务的特性：</p>
 <ul>
 <li>原子性：事务作为一个整体执行，包含在其中的数据库操作要么全部执行，要么不执行。</li>
@@ -84,7 +101,7 @@
 <li>读未提交（Read uncommitted）：允许“脏读”，即事务可以读到其它事务还未提交的修改。</li>
 <li>读已提交（Read committed）：只能读取到已经提交的数据。</li>
 <li>可重复读（Repeatable reads）：即在事务中的查询和开始是一致的。</li>
-<li>可串形化（Serializable）：在基于锁机制并发控制的DBMS实现可串行化，要求在选定对象上的读锁和写锁保持直到事务结束后才能释放。在SELECT的查询中使用一个“WHERE”子句来描述一个范围时应该获得一个“范围锁”（range-locks）。</li>
+<li>可串形化（Serializable）：在基于锁机制并发控制的 DBMS 实现可串行化，要求在选定对象上的读锁和写锁保持直到事务结束后才能释放。在 SELECT 的查询中使用一个“WHERE”子句来描述一个范围时应该获得一个“范围锁”（range-locks）。</li>
 </ul>
 ]]></content>
     
@@ -231,7 +248,7 @@
     <link href="http://yoursite.com/2018/05/23/%E9%87%8D%E6%8B%BE-DSA-%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E4%B9%8B%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F/"/>
     <id>http://yoursite.com/2018/05/23/重拾-DSA-排序算法之冒泡排序/</id>
     <published>2018-05-23T10:36:06.000Z</published>
-    <updated>2019-10-12T10:59:25.582Z</updated>
+    <updated>2019-10-12T11:29:08.945Z</updated>
     
     <content type="html"><![CDATA[<p>下面是 wikipedia 对于冒泡排序的概括：</p>
 <blockquote>
@@ -249,7 +266,7 @@
     
     <summary type="html">
     
-      面试手写冒泡排序写错了，惭愧。
+      关于冒泡排序的简单介绍和 Java 实现。
     
     </summary>
     
@@ -265,11 +282,11 @@
     <link href="http://yoursite.com/2018/05/20/Android%E6%8A%BD%E8%B1%A1%E5%B8%83%E5%B1%80/"/>
     <id>http://yoursite.com/2018/05/20/Android抽象布局/</id>
     <published>2018-05-20T10:03:24.000Z</published>
-    <updated>2018-05-20T10:03:51.352Z</updated>
+    <updated>2019-10-12T11:23:44.583Z</updated>
     
-    <content type="html"><![CDATA[<h3 id="1-lt-include-gt-标签"><a href="#1-lt-include-gt-标签" class="headerlink" title="1.&lt;include /&gt; 标签"></a>1.&lt;include /&gt; 标签</h3><p>&lt;include /&gt; 标签主要解决布局重用的问题，在我们大多数的 app 中的标题栏布局都是相似的，这个时候就可以用 &lt;include /&gt; 标签重用布局文件了。使用方法如下：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></div><div class="line">	<span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></div><div class="line">	<span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></div><div class="line">	<span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></div><div class="line">	<span class="attr">android:orientation</span>=<span class="string">"vertical"</span>&gt;</div><div class="line"></div><div class="line">	<span class="tag">&lt;<span class="name">include</span> <span class="attr">layout</span>=<span class="string">"@layout/include_head"</span>/&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<h3 id="2-lt-merge-gt-标签"><a href="#2-lt-merge-gt-标签" class="headerlink" title="2.&lt;merge /&gt; 标签"></a>2.&lt;merge /&gt; 标签</h3><p>&lt;merge /&gt; 标签的作用可以减少 UI 的层级，假如要在主布局 LinearLayout 中引入同样是 LinearLayout 的 include 布局，那么便可以将引入布局的最外层布局设置为 &lt;merge /&gt; 标签，这样系统将会自动忽略 &lt;merge /&gt; 节点，从而达到减少布局层次的目的。比如：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">merge</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">TextView</span></span></div><div class="line">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:text</span>=<span class="string">"hello"</span> /&gt;</div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">TextView</span></span></div><div class="line">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:text</span>=<span class="string">"world"</span> /&gt;</div><div class="line">    </div><div class="line"><span class="tag">&lt;/<span class="name">merge</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<h3 id="3-lt-ViewStub-gt-标签"><a href="#3-lt-ViewStub-gt-标签" class="headerlink" title="3.&lt;ViewStub /&gt; 标签"></a>3.&lt;ViewStub /&gt; 标签</h3><p>&lt;ViewStub /&gt; 标签的作用就是延迟加载布局资源，从而达到加快 UI 初始化速度目的，适用场景如进度条，加载失败布局等一些一开始不需要加载的布局。如：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">android.support.constraint.ConstraintLayout</span> </span></div><div class="line">    <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></div><div class="line">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></div><div class="line">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></div><div class="line">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></div><div class="line">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></div><div class="line">    <span class="attr">tools:context</span>=<span class="string">"com.juhe.generaldemo.MainActivity"</span>&gt;</div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">ViewStub</span></span></div><div class="line">        <span class="attr">android:id</span>=<span class="string">"@+id/viewstub"</span></div><div class="line">        <span class="attr">android:layout</span>=<span class="string">"@layout/viewstub_layout"</span></div><div class="line">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span> /&gt;</div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">android.support.constraint.ConstraintLayout</span>&gt;</span></div></pre></td></tr></table></figure></p>
+    <content type="html"><![CDATA[<h3 id="1-lt-include-gt-标签"><a href="#1-lt-include-gt-标签" class="headerlink" title="1.&lt;include /&gt; 标签"></a>1.<code>&lt;include /&gt;</code> 标签</h3><p><code>&lt;include /&gt;</code> 标签主要解决布局重用的问题，在我们大多数的 app 中的标题栏布局都是相似的，这个时候就可以用 <code>&lt;include /&gt;</code> 标签重用布局文件了。使用方法如下：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></div><div class="line">	<span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></div><div class="line">	<span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></div><div class="line">	<span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></div><div class="line">	<span class="attr">android:orientation</span>=<span class="string">"vertical"</span>&gt;</div><div class="line"></div><div class="line">	<span class="tag">&lt;<span class="name">include</span> <span class="attr">layout</span>=<span class="string">"@layout/include_head"</span>/&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<h3 id="2-lt-merge-gt-标签"><a href="#2-lt-merge-gt-标签" class="headerlink" title="2.&lt;merge /&gt; 标签"></a>2.<code>&lt;merge /&gt;</code> 标签</h3><p><code>&lt;merge /&gt;</code> 标签的作用可以减少 UI 的层级，假如要在主布局 <code>LinearLayout</code> 中引入同样是 <code>LinearLayout</code> 的 <code>include</code> 布局，那么便可以将引入布局的最外层布局设置为 <code>&lt;merge /&gt;</code> 标签，这样系统将会自动忽略 <code>&lt;merge /&gt;</code>节点，从而达到减少布局层次的目的。比如：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">merge</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">TextView</span></span></div><div class="line">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:text</span>=<span class="string">"hello"</span> /&gt;</div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">TextView</span></span></div><div class="line">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:text</span>=<span class="string">"world"</span> /&gt;</div><div class="line">    </div><div class="line"><span class="tag">&lt;/<span class="name">merge</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<h3 id="3-lt-ViewStub-gt-标签"><a href="#3-lt-ViewStub-gt-标签" class="headerlink" title="3.&lt;ViewStub /&gt; 标签"></a>3.<code>&lt;ViewStub /&gt;</code> 标签</h3><p><code>&lt;ViewStub /&gt;</code> 标签的作用就是延迟加载布局资源，从而达到加快 UI 初始化速度目的，适用场景如进度条，加载失败布局等一些一开始不需要加载的布局。如：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">android.support.constraint.ConstraintLayout</span> </span></div><div class="line">    <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></div><div class="line">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></div><div class="line">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></div><div class="line">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></div><div class="line">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></div><div class="line">    <span class="attr">tools:context</span>=<span class="string">"com.juhe.generaldemo.MainActivity"</span>&gt;</div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">ViewStub</span></span></div><div class="line">        <span class="attr">android:id</span>=<span class="string">"@+id/viewstub"</span></div><div class="line">        <span class="attr">android:layout</span>=<span class="string">"@layout/viewstub_layout"</span></div><div class="line">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span> /&gt;</div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">android.support.constraint.ConstraintLayout</span>&gt;</span></div></pre></td></tr></table></figure></p>
 <p>想要加载布局时：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ViewStub viewStub = (ViewStub) findViewById(R.id.viewstub);</div><div class="line">viewStub.inflate();</div></pre></td></tr></table></figure></p>
 ]]></content>
     
@@ -283,59 +300,6 @@
     
     
       <category term="android" scheme="http://yoursite.com/tags%C3%9F/android/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>2017 年终总结</title>
-    <link href="http://yoursite.com/2018/01/01/2017%E5%B9%B4%E7%9A%84%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/"/>
-    <id>http://yoursite.com/2018/01/01/2017年的年终总结/</id>
-    <published>2018-01-01T09:49:30.000Z</published>
-    <updated>2018-03-05T08:07:38.643Z</updated>
-    
-    <content type="html"><![CDATA[<!-- 本来打算不写的，可是想了想不总结似乎有些过不去，就好像是个习惯，很难改变，那就简单写写过去的一年吧。
-
-2017 年可以按时间分割为两部分，八月中旬我辞去了在多少的工作，然后就来到了炬合网络，为什么要辞职呢，这个我之前已经[写过](https://www.dujianping.com/2017/08/17/%E7%A6%BB%E8%81%8C/)，这里就不再重述了，我想接下来还是主要写一些关于炬合的事。炬合这家公司给我的第一印象似乎是不靠谱的，从在 boss 上忠哥没有仔细看我简历就让我去面试，到去面试的时候发现公司空荡荡几乎没有看到啥人，我特别犹豫不决，回来的时候我再看看简介原来是三个浙大一起创业的公司，好感度增加了点，忠哥初面之后大概第二天吧就通知我去复试，复试我的是邵总，印象还挺好的，当时给我介绍了一些关于公司的情况啥的，说完我还挺期待，当时就觉得可以加入，之后就进去了，谁知道三个月之后我面临了裁员。初进炬合便立马参与进现金斗士这个项目里了，然后开始疯狂的加班，每天晚上加班到九点半之后，周六也加班，国庆也加班，这种状态大概持续了一个多月吧，随着项目渐渐地完成，工作的安排也正常起来了，几乎是不用加班的。虽然加班多，工作强度大，大到我记得第一个 iOS 来了一个星期就走了，但我挺开心的，尤其是遇到了这些同事，忠哥、小罗、夏哲、文斌、小敏、小布、姚佳还有其他人，我就觉得和他们一起工作特别舒服，似乎每天都过得很有意思，那时候我就在想如果我们这群人把这件事做成了，那人生就相当圆满了，可是现实总是事与愿违。一开始内心有挣扎是在安卓 app 上架时期，那个时候因为资质的问题我们有些渠道，包括应用宝在内的大渠道上不去，按照我的逻辑当然没有资质就去申请资质嘛，大概是因为炬合无法满足这些要求，小布就搞了些假资质尝试上线，那个时候稍微有些不爽了，之后是现金斗士返利版，很随意的一个产品，再后来也就基本没啥特别的事了，监管政策下来，现金贷业务叫停，过了几周就让我们走人了，就这样第一次体验到了商业社会的残酷。
-
-没有后悔离开多少，因为不这样做，我会一直陷于泥潭之中；更没有后悔加入炬合，虽然最后还是散了，但我遇到了很多有意思的人，收获了友谊，当然还有自我成长，这也是最重要的。
-
-2018 年等待我去完成的第一件事就是找工作，我想这次就直奔我心心念念好久的上海去了吧，希望在这一年里能养成些新的好习惯，增加点体重，成为更好的自己，good luck～ -->
-]]></content>
-    
-    <summary type="html">
-    
-      本来打算不写的，可是想了想不总结似乎有些过不去，就好像是个习惯，很难改变，那就简单写写过去的一年吧。
-    
-    </summary>
-    
-      <category term="生活" scheme="http://yoursite.com/categories/%E7%94%9F%E6%B4%BB/"/>
-    
-    
-      <category term="随想" scheme="http://yoursite.com/tags%C3%9F/%E9%9A%8F%E6%83%B3/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>2months</title>
-    <link href="http://yoursite.com/2017/11/14/2months/"/>
-    <id>http://yoursite.com/2017/11/14/2months/</id>
-    <published>2017-11-14T06:53:43.000Z</published>
-    <updated>2017-11-14T07:11:20.751Z</updated>
-    
-    <content type="html"><![CDATA[<p>前些天有个许久未联系的朋友微信发来问候“最近身体还好吧？”，我当时有种哭笑不得的感觉，然后今天感冒了，现在看来多像“善意的诅咒”啊。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;前些天有个许久未联系的朋友微信发来问候“最近身体还好吧？”，我当时有种哭笑不得的感觉，然后今天感冒了，现在看来多像“善意的诅咒”啊。&lt;/p&gt;
-
-    
-    </summary>
-    
-      <category term="生活" scheme="http://yoursite.com/categories/%E7%94%9F%E6%B4%BB/"/>
-    
-    
-      <category term="随想" scheme="http://yoursite.com/tags%C3%9F/%E9%9A%8F%E6%83%B3/"/>
     
   </entry>
   
@@ -378,32 +342,6 @@
     
     
       <category term="DSA" scheme="http://yoursite.com/tags%C3%9F/DSA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>离职</title>
-    <link href="http://yoursite.com/2017/08/17/%E7%A6%BB%E8%81%8C/"/>
-    <id>http://yoursite.com/2017/08/17/离职/</id>
-    <published>2017-08-17T15:15:22.000Z</published>
-    <updated>2017-08-17T16:05:50.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>是的，今天正式离职了，又一次裸辞，比预期离开的时间提前了一天。其实我早就有辞职这个想法，也和 leader 交谈过，之前的想法是等找到合适的下家再正式提出，不过工作机会似乎并不多，合适的就更少了，所以一直拖着，直到上上个星期，leader 找我谈话，大概意思就是说如果现在离职就比较好交接，如果接下来要走，就得等他招到人交接完才能走，再三考虑之后，我决定离开。</p>
-<p>说说要离开的理由吧。主要有两个原因，首先我觉得这个项目已经不太有可能会起来了，其次是待遇问题。</p>
-<p>对于这次裸辞，我并没觉得自己是任性的，这是理性选择的结果，对于这段工作经历，我还没有仔细总结过，反正在怎么样给人画大饼上我是深有体会了。</p>
-<p>接下来就是找新工作的事情了，送给自己八个字：全力以赴，慎重选择。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;是的，今天正式离职了，又一次裸辞，比预期离开的时间提前了一天。其实我早就有辞职这个想法，也和 leader 交谈过，之前的想法是等找到合适的下家再正式提出，不过工作机会似乎并不多，合适的就更少了，所以一直拖着，直到上上个星期，leader 找我谈话，大概意思就是说如果现在离
-    
-    </summary>
-    
-      <category term="生活" scheme="http://yoursite.com/categories/%E7%94%9F%E6%B4%BB/"/>
-    
-    
-      <category term="随想" scheme="http://yoursite.com/tags%C3%9F/%E9%9A%8F%E6%83%B3/"/>
     
   </entry>
   
@@ -494,11 +432,11 @@
     <link href="http://yoursite.com/2017/08/11/%E9%87%8D%E6%8B%BE-DSA-%E4%B9%8B%E9%93%BE%E8%A1%A8/"/>
     <id>http://yoursite.com/2017/08/11/重拾-DSA-之链表/</id>
     <published>2017-08-11T07:40:59.000Z</published>
-    <updated>2017-08-12T08:23:19.000Z</updated>
+    <updated>2019-10-12T11:07:58.632Z</updated>
     
     <content type="html"><![CDATA[<p>下面是 wikipedia 对于链表的定义：</p>
 <blockquote>
-<p><strong>链表</strong>（Linked list）是一种常见的基础数据结构，是一种线性表，但是并不会按线性的顺序存储数据，而是在每一个节点里存到下一个节点的指针(Pointer)。由于不必须按顺序存储，链表在插入的时候可以达到   O(1) 的复杂度，比另一种线性表顺序表快得多，但是查找一个节点或者访问特定编号的节点则需要 O(n) 的时间，而顺序表相应的时间复杂度分别是O(logn) 和 O(1)。</p>
+<p><strong>链表</strong>（Linked list）是一种常见的基础数据结构，是一种线性表，但是并不会按线性的顺序存储数据，而是在每一个节点里存到下一个节点的指针(Pointer)。由于不必须按顺序存储，链表在插入的时候可以达到   O(1) 的复杂度，比另一种线性表顺序表快得多，但是查找一个节点或者访问特定编号的节点则需要 O(n) 的时间，而顺序表相应的时间复杂度分别是 O(logn) 和 O(1)。</p>
 </blockquote>
 <ul>
 <li>添加<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(Object data)</span> </span>&#123;</div><div class="line">	<span class="comment">//如果头节点为空，则创建一个新节点，并将其设置为头节点以及当前节点。</span></div><div class="line">	<span class="keyword">if</span>(head == <span class="keyword">null</span>) &#123;</div><div class="line">		head = <span class="keyword">new</span> Node(data);</div><div class="line">		current = head;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span> &#123;</div><div class="line">		current.next = <span class="keyword">new</span> Node(data);</div><div class="line">		current = current.next;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
@@ -736,6 +674,58 @@
     
       &lt;p&gt;这是一个开始，开始寻找一个新的开始。&lt;/p&gt;
 
+    
+    </summary>
+    
+      <category term="生活" scheme="http://yoursite.com/categories/%E7%94%9F%E6%B4%BB/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>我有一个梦想</title>
+    <link href="http://yoursite.com/2017/01/05/%E6%88%91%E6%9C%89%E4%B8%80%E4%B8%AA%E6%A2%A6%E6%83%B3/"/>
+    <id>http://yoursite.com/2017/01/05/我有一个梦想/</id>
+    <published>2017-01-05T15:31:31.000Z</published>
+    <updated>2017-07-10T08:58:52.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>我有一个梦想，那就是四处游荡，去往每一处我向往的地方。我希望体验不同的生活，每到一处就找一份工作，这份工作不必太辛劳，能有自己的时间，normal的工资，一年或者两年之后，go to the next one。</p>
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="//music.163.com/outchain/player?type=2&id=26590192&auto=0&height=66"></iframe>
+
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我有一个梦想，那就是四处游荡，去往每一处我向往的地方。我希望体验不同的生活，每到一处就找一份工作，这份工作不必太辛劳，能有自己的时间，normal的工资，一年或者两年之后，go to the next one。&lt;/p&gt;
+&lt;iframe frameborder=&quot;no&quot; bo
+    
+    </summary>
+    
+      <category term="生活" scheme="http://yoursite.com/categories/%E7%94%9F%E6%B4%BB/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>2016年的尾巴</title>
+    <link href="http://yoursite.com/2016/12/31/2016%E5%B9%B4%E7%9A%84%E5%B0%BE%E5%B7%B4/"/>
+    <id>http://yoursite.com/2016/12/31/2016年的尾巴/</id>
+    <published>2016-12-31T15:52:18.000Z</published>
+    <updated>2019-10-12T11:41:30.347Z</updated>
+    
+    <content type="html"><![CDATA[<p>2016年的最后一天是这样的<br><a id="more"></a></p>
+<p>一部电影</p>
+<p><img src="http://wx1.sinaimg.cn/large/9302210cly1fygi1zb29wj20zk0k0wg6.jpg" alt=""></p>
+<p>一场球赛</p>
+<p><img src="http://wx2.sinaimg.cn/large/9302210cly1fygi2298ngj20zk0ju41l.jpg" alt=""></p>
+<p>以及<br>若干杯红酒</p>
+<p><img src="http://wx4.sinaimg.cn/large/9302210cly1fygi1wduv4j20zk0qm77h.jpg" alt=""></p>
+<p>2017 你好～</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;2016年的最后一天是这样的&lt;br&gt;
     
     </summary>
     
