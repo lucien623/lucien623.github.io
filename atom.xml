@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-10-19T03:01:34.394Z</updated>
+  <updated>2019-10-19T12:46:01.913Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,43 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>ButterKnife原理探析</title>
+    <link href="http://yoursite.com/2019/10/19/ButterKnife%E5%8E%9F%E7%90%86%E6%8E%A2%E6%9E%90/"/>
+    <id>http://yoursite.com/2019/10/19/ButterKnife原理探析/</id>
+    <published>2019-10-19T11:03:09.000Z</published>
+    <updated>2019-10-19T12:46:01.913Z</updated>
+    
+    <content type="html"><![CDATA[<p><code>ButterKnife</code>是<code>Android</code>开发中常用的<code>View</code>注入框架，主要作用就是减少<code>findViewById</code>代码，使其更简洁。在分析这个框架之前我们先要了解一下<code>Annotation</code> 注解相关的知识。</p>
+<p>注解是<code>Java</code>语言 5.0 版本开始支持加入源代码的特殊语法元数据。<code>Java</code>语言中的类、方法、变量、参数和包等都可以被标注。主要有三个作用，第一种作用是标记用来告诉编译器一些信息；第二种是编译时处理动态生成代码；第三种是运行时动态处理得到注解信息。注解主要分为三类：</p>
+<p>标准注解：是<code>Java</code>自带的一些注解，比如<code>@Override</code>、<code>@Deprecated</code></p>
+<p>元注解：指用来定义自定义注解的注解，<code>@Retention</code>表示注解的保留时间，<code>SOURCE</code>表示源码时保留编译后会被抛弃，<code>CLASS</code>表示编译时保留运行时会被丢弃，<code>RUNTIME</code>表示运⾏时保留。<code>@Target</code>用来表示注解可以修饰哪些元素，比如<code>TYPE</code>(类、接口)，<code>FIELD</code>（字段），<code>METHOD</code>（方法），<code>CONSTRUCTOR</code>（构造方法）, <code>PARAMETER</code>（参数申明）等。<code>@Inherited</code>表示是否可以被继承，<code>@Documented</code>是否会保存到⽂档。</p>
+<p>自定义注解：通过元注解定义的注解，我们来看以下<code>ButterKnife</code>中的一个自定义注解<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Retention</span>(CLASS) </div><div class="line"><span class="meta">@Target</span>(FIELD)</div><div class="line"><span class="keyword">public</span> <span class="meta">@interface</span> BindView &#123;</div><div class="line">  <span class="comment">/** View ID to which the field will be bound. */</span></div><div class="line">  <span class="meta">@IdRes</span> <span class="function"><span class="keyword">int</span> <span class="title">value</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们可以看到这个注解会在编译时被保留<code>@Retention(CLASS)</code>，目标是对于字段<code>@Target(FIELD)</code>，注解的类型是<code>int</code>类型的<code>id</code>资源。</p>
+<p>好了，注解大概就分析这些，接下来来看看<code>ButterKnife</code>是如何实现的。</p>
+<p>首先<code>ButterKnife</code>不仅可以注入<code>View</code>，还可以绑定资源，点击事件等等，使用方式就不一一讲解了，ok，那么我们以绑定<code>view</code>为例，比如我们在<code>LoanFragment</code>里添加了如下代码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@BindView</span>(R.id.text_title) TextView mTextTitle;</div></pre></td></tr></table></figure></p>
+<p>然后我们在初始化的时候调用绑定<code>ButterKnife.bind(this, mFragmentView);</code>方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> View <span class="title">onCreateView</span><span class="params">(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">    TAG = <span class="keyword">this</span>.getClass().getSimpleName();</div><div class="line">    <span class="keyword">if</span> (mFragmentView == <span class="keyword">null</span>) &#123;</div><div class="line">        mFragmentView = inflater.inflate(getLayoutId(), container, <span class="keyword">false</span>);</div><div class="line">        unbinder = ButterKnife.bind(<span class="keyword">this</span>, mFragmentView);</div><div class="line">        initView(mFragmentView);</div><div class="line">        initData();</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> mFragmentView;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>接着看<code>bind</code>方法里的逻辑<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@NonNull</span> <span class="meta">@UiThread</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Unbinder <span class="title">bind</span><span class="params">(@NonNull Object target, @NonNull View source)</span> </span>&#123;</div><div class="line">  <span class="keyword">return</span> createBinding(target, source);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Unbinder <span class="title">createBinding</span><span class="params">(@NonNull Object target, @NonNull View source)</span> </span>&#123;</div><div class="line">  Class&lt;?&gt; targetClass = target.getClass();</div><div class="line">  <span class="keyword">if</span> (debug) Log.d(TAG, <span class="string">"Looking up binding for "</span> + targetClass.getName());</div><div class="line">  Constructor&lt;? extends Unbinder&gt; constructor = findBindingConstructorForClass(targetClass);</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (constructor == <span class="keyword">null</span>) &#123;</div><div class="line">    <span class="keyword">return</span> Unbinder.EMPTY;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">//noinspection TryWithIdenticalCatches Resolves to API 19+ only type.</span></div><div class="line">  <span class="keyword">try</span> &#123;</div><div class="line">    <span class="keyword">return</span> constructor.newInstance(target, source);</div><div class="line">  &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Unable to invoke "</span> + constructor, e);</div><div class="line">  &#125; <span class="keyword">catch</span> (InstantiationException e) &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Unable to invoke "</span> + constructor, e);</div><div class="line">  &#125; <span class="keyword">catch</span> (InvocationTargetException e) &#123;</div><div class="line">    Throwable cause = e.getCause();</div><div class="line">    <span class="keyword">if</span> (cause <span class="keyword">instanceof</span> RuntimeException) &#123;</div><div class="line">      <span class="keyword">throw</span> (RuntimeException) cause;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (cause <span class="keyword">instanceof</span> Error) &#123;</div><div class="line">      <span class="keyword">throw</span> (Error) cause;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Unable to create binding instance."</span>, cause);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>第一步获取到<code>LoanFragment</code>的<code>Class</code>实例，接着调用<code>findBindingConstructorForClass</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Nullable</span> <span class="meta">@CheckResult</span> <span class="meta">@UiThread</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> Constructor&lt;? extends Unbinder&gt; findBindingConstructorForClass(Class&lt;?&gt; cls) &#123;</div><div class="line">  Constructor&lt;? extends Unbinder&gt; bindingCtor = BINDINGS.get(cls);</div><div class="line">  <span class="keyword">if</span> (bindingCtor != <span class="keyword">null</span>) &#123;</div><div class="line">    <span class="keyword">if</span> (debug) Log.d(TAG, <span class="string">"HIT: Cached in binding map."</span>);</div><div class="line">    <span class="keyword">return</span> bindingCtor;</div><div class="line">  &#125;</div><div class="line">  String clsName = cls.getName();</div><div class="line">  <span class="keyword">if</span> (clsName.startsWith(<span class="string">"android."</span>) || clsName.startsWith(<span class="string">"java."</span>)) &#123;</div><div class="line">    <span class="keyword">if</span> (debug) Log.d(TAG, <span class="string">"MISS: Reached framework class. Abandoning search."</span>);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">try</span> &#123;</div><div class="line">    Class&lt;?&gt; bindingClass = cls.getClassLoader().loadClass(clsName + <span class="string">"_ViewBinding"</span>);</div><div class="line">    <span class="comment">//noinspection unchecked</span></div><div class="line">    bindingCtor = (Constructor&lt;? extends Unbinder&gt;) bindingClass.getConstructor(cls, View.class);</div><div class="line">    <span class="keyword">if</span> (debug) Log.d(TAG, <span class="string">"HIT: Loaded binding class and constructor."</span>);</div><div class="line">  &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</div><div class="line">    <span class="keyword">if</span> (debug) Log.d(TAG, <span class="string">"Not found. Trying superclass "</span> + cls.getSuperclass().getName());</div><div class="line">    bindingCtor = findBindingConstructorForClass(cls.getSuperclass());</div><div class="line">  &#125; <span class="keyword">catch</span> (NoSuchMethodException e) &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Unable to find binding constructor for "</span> + clsName, e);</div><div class="line">  &#125;</div><div class="line">  BINDINGS.put(cls, bindingCtor);</div><div class="line">  <span class="keyword">return</span> bindingCtor;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这一步是为了获取相对应类的构造器，<code>BINDINGS</code>是一个保存着<code>Class</code>实例和构造器相映射的<code>map</code>，进入这个方法会先去判断之前是否已经获取过该<code>Class</code>实例的构造器，如果有则直接<code>return</code>，否则获取到该类的名称，通过该<code>Class</code>实例的类加载器把<code>clsName + &quot;_ViewBinding&quot;</code>加载，再通过这个<code>Class</code>实例获取到相应的构造器返回并放入<code>BINDINGS</code>中，<code>clsName + &quot;_ViewBinding&quot;</code>到底是什么呢，其实在编译之后我们可以在<code>build/generated/source/apt</code>路径下可以找到<code>LoanFragment_ViewBinding</code>这个类，正好是这个拼接字符串的格式，拿到构造器之后会通过<code>return constructor.newInstance(target, source);</code>构建出相应实例，那么继续看这个构造方法里执行了什么<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@UiThread</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">LoanFragment_ViewBinding</span><span class="params">(LoanFragment target, View source)</span> </span>&#123;</div><div class="line">  <span class="keyword">this</span>.target = target;</div><div class="line"></div><div class="line">  target.mTextTitle = Utils.findRequiredViewAsType(source, R.id.text_title, <span class="string">"field 'mTextTitle'"</span>, TextView.class);</div><div class="line">  <span class="comment">//...此处省略部分代码</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">T <span class="title">findRequiredViewAsType</span><span class="params">(View source, @IdRes <span class="keyword">int</span> id, String who,</span></span></div><div class="line">    Class&lt;T&gt; cls) &#123;</div><div class="line">  View view = findRequiredView(source, id, who);</div><div class="line">  <span class="keyword">return</span> castView(view, id, who, cls);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> View <span class="title">findRequiredView</span><span class="params">(View source, @IdRes <span class="keyword">int</span> id, String who)</span> </span>&#123;</div><div class="line">  View view = source.findViewById(id);</div><div class="line">  <span class="keyword">if</span> (view != <span class="keyword">null</span>) &#123;</div><div class="line">    <span class="keyword">return</span> view;</div><div class="line">  &#125;</div><div class="line">  String name = getResourceEntryName(source, id);</div><div class="line">  <span class="comment">//...此处省略部分代码</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>很明显了，如果是注入<code>view</code>的话最终还是调用<code>source.findViewById(id)</code>方式获取到的，<code>target.mTextTitle</code>即我们在<code>LoanFragment</code>中定义的<code>mTextTitle</code>，<code>target</code>是我们调用<code>bind</code>方法是传进来的<code>LoanFragment</code>实例。当<code>Activity</code>调用<code>bind</code>方法时<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">AboutUsActivity_ViewBinding</span><span class="params">(AboutUsActivity target)</span> </span>&#123;</div><div class="line">  <span class="keyword">this</span>(target, target.getWindow().getDecorView());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里可以看到会获取当前<code>Activity</code>的<code>DecorView</code>，即最顶层布局作为<code>source</code>调用<code>findViewById</code>的。<code>bind</code>的整体流程大致就是如此了，至于那些编译时的注入类主要依靠的是 apt 工具生成的，就暂时不展开了。</p>
+<p>参考文章：<br><a href="http://trinea.github.io/download/pdf/android/java-annotation.pdf" target="_blank" rel="external">http://trinea.github.io/download/pdf/android/java-annotation.pdf</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      对 ButterKnife 原理的简要分析。
+    
+    </summary>
+    
+      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="android" scheme="http://yoursite.com/tags%C3%9F/android/"/>
+    
+  </entry>
   
   <entry>
     <title>OkHttp原理探析</title>
@@ -754,68 +791,6 @@
     <summary type="html">
     
       &lt;p&gt;Android 中和事件分发相关的主要有三个方法，分别是 dispatchTouchEvent(…)、onInterceptTouchEvent(…) 和 onTouchEvent(…)，主要作用是分发事件、是否拦截事件以及处理事件，这些方法的返回值决定了 Touch 事件
-    
-    </summary>
-    
-      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
-    
-    
-      <category term="android" scheme="http://yoursite.com/tags%C3%9F/android/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Activity生命周期</title>
-    <link href="http://yoursite.com/2017/07/10/Activity%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"/>
-    <id>http://yoursite.com/2017/07/10/Activity生命周期/</id>
-    <published>2017-07-10T03:37:39.000Z</published>
-    <updated>2017-08-04T05:52:57.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>Activity 是 Android 四大组件之一，它主要给用户提供了一个交互页面，用户通过它与app进行交互，以执行各种操作。 每个 Activity 都会获得一个用于绘制其用户界面的窗口。窗口通常会充满屏幕，但也可小于屏幕并浮动在其他窗口之上（将 Activity 的 theme 设置为 Dialog）。Activity 生命周期中主要的七个回调方法介绍如下表：</p>
-<table>
-<thead>
-<tr>
-<th>方法</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>onCreate()</td>
-<td>Activity 创建的时候调用,可以在方法里做一些初始化的操作，比如初始化试图，获取从上一个页面传递过来的数据，此时处于不可见状态。</td>
-</tr>
-<tr>
-<td>onRestart()</td>
-<td>在 Activity 已停止并即将再次启动前调用。</td>
-</tr>
-<tr>
-<td>onStart()</td>
-<td>Activity 处于可见状态，但不能操作，因为并未获取到焦点。</td>
-</tr>
-<tr>
-<td>onResume()</td>
-<td>Activity 处于可见状态，并且能够获取到焦点，在 Activity 恢复时可以在此方法中刷新数据。</td>
-</tr>
-<tr>
-<td>onPause()</td>
-<td>当系统即将开始继续另一个 Activity 时调用。当此方法执行完才会启动下一个 Activity，此方法中可以做一些停止动画，释放一些资源的操作，但不适合一些比较耗时的操作，因为这样会导致跳转的时候卡顿。</td>
-</tr>
-<tr>
-<td>onStop()</td>
-<td>在 Activity 对用户不再可见时调用。如果 Activity 恢复交互，那么接下来会调用 onRestart() 方法，如果 Activity 销毁，那么将会调用 onDestory() 方法。</td>
-</tr>
-<tr>
-<td>onDestory()</td>
-<td>在 Activity 被销毁前调用。</td>
-</tr>
-</tbody>
-</table>
-<p><img src="https://developer.android.com/images/activity_lifecycle.png" alt="activity-life"></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Activity 是 Android 四大组件之一，它主要给用户提供了一个交互页面，用户通过它与app进行交互，以执行各种操作。 每个 Activity 都会获得一个用于绘制其用户界面的窗口。窗口通常会充满屏幕，但也可小于屏幕并浮动在其他窗口之上（将 Activity 的 
     
     </summary>
     
