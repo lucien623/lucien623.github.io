@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-10-20T10:36:34.176Z</updated>
+  <updated>2019-10-21T09:43:10.266Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>重拾 DSA 排序算法之堆排序</title>
+    <link href="http://yoursite.com/2019/10/21/%E9%87%8D%E6%8B%BE-DSA-%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E4%B9%8B%E5%A0%86%E6%8E%92%E5%BA%8F/"/>
+    <id>http://yoursite.com/2019/10/21/重拾-DSA-排序算法之堆排序/</id>
+    <published>2019-10-21T08:23:47.000Z</published>
+    <updated>2019-10-21T09:43:10.266Z</updated>
+    
+    <content type="html"><![CDATA[<p>Heapsort（堆排序），顾名思义是基于对数据结构的一种排序算法，了解堆之前我们需要了解什么是二叉树和完全二叉树，二叉树在之前关于树的文章中有简单介绍（<a href="https://lucien623.github.io/2017/08/19/%E9%87%8D%E6%8B%BE-DSA-%E4%B9%8B%E6%A0%91/" target="_blank" rel="external">click here</a>），简单来说就是每个节点最多含有两个子树的树称为二叉树，完全二叉树则是深度为h，除第 h 层外，其它各层 (1～h-1) 的结点数都达到最大个数，第 h 层所有的结点都连续集中在最左边的二叉树，那么堆除了有何完全二叉树同样的性质外，还有一个特殊的性质，即子结点的键值或索引总是小于（或者大于）等于它的父节点。堆一般分为两种，大顶堆和小顶堆。大顶堆指堆中的每个父节点都大于等于其孩子节点，根节点即最大元素，小顶堆则和大顶堆相反，每个父节点小于等于其孩子节点，根节点即最小元素。当我们以数组的形式保存堆时，即有以下性质 array[i] &gt;= array[2 <em> i + 1] &amp;&amp; array[i] &gt;= array[2 </em> i + 1] 或者 array[i] &lt;= array[2 <em> i + 1] &amp;&amp; array[i] &lt;= array[2 </em> i + 1]，这里假设 2 <em> i + 1 和 2 </em> i + 1 的元素都存在，有了这样的性质我们就可以来构建大顶堆或者小顶堆了，这里我们以构建大顶堆为例，大致思路是先从最后一个非叶子节点开始调整堆直到调整到根节点位置，那么最后一个非叶子节点如何得到呢，其实只要用数组的 length / 2 - 1 就可以计算出下标了，来看看代码。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * </div><div class="line"> * <span class="doctag">@param</span> array 待调整数组</div><div class="line"> * <span class="doctag">@param</span> i 需要调整的元素</div><div class="line"> * <span class="doctag">@param</span> length 待调整数组长度</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">adjustHeap</span><span class="params">(<span class="keyword">int</span> array[], <span class="keyword">int</span> i, <span class="keyword">int</span> length)</span> </span>&#123;</div><div class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">2</span> * i + <span class="number">1</span>; j &lt; length; j = <span class="number">2</span> * j + <span class="number">1</span>) &#123;</div><div class="line">		<span class="keyword">int</span> temp = array[i];</div><div class="line">		<span class="keyword">if</span>(j + <span class="number">1</span> &lt; length &amp;&amp; array[j + <span class="number">1</span>] &gt; array[j])</div><div class="line">			j = j + <span class="number">1</span>;</div><div class="line">		<span class="keyword">if</span>(temp &lt; array[j]) &#123;</div><div class="line">			swap(array, i, j);</div><div class="line">			i = j;</div><div class="line">		&#125; <span class="keyword">else</span> &#123;</div><div class="line">			<span class="keyword">break</span>;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> array[], <span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(i &lt; <span class="number">0</span> || j &lt; <span class="number">0</span> || i &gt;= array.length || j &gt;= array.length)</div><div class="line">		<span class="keyword">return</span>;</div><div class="line">	<span class="keyword">int</span> temp = array[i];</div><div class="line">	array[i] = array[j];</div><div class="line">	array[j] = temp;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>然后我们从最后一个非叶子节点开始调整<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> length = array.length;</div><div class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i = length / <span class="number">2</span> - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</div><div class="line">	adjustHeap(array, i, length);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这样大顶堆就构建完成了。ok，堆排序的思路是每次构建完大顶堆的时候，把根节点和待排序数组的最后一个数进行交换，然后再根据根节点重新调整成大顶堆，直到排序完成。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span>(<span class="keyword">int</span> last = length - <span class="number">1</span>;last &gt; <span class="number">0</span>; last--) &#123;</div><div class="line">	swap(array, <span class="number">0</span>, last);</div><div class="line">	adjustHeap(array, <span class="number">0</span>, last);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>堆排序的大致介绍就是如此了，其最好最坏的时间复杂度均为 O(nlogn)。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      关于堆排序的简单介绍和 Java 实现。
+    
+    </summary>
+    
+      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="DSA" scheme="http://yoursite.com/tags%C3%9F/DSA/"/>
+    
+  </entry>
   
   <entry>
     <title>Java线程池ThreadPoolExecutor介绍</title>
@@ -586,7 +612,7 @@
     <link href="http://yoursite.com/2017/08/19/%E9%87%8D%E6%8B%BE-DSA-%E4%B9%8B%E6%A0%91/"/>
     <id>http://yoursite.com/2017/08/19/重拾-DSA-之树/</id>
     <published>2017-08-19T01:50:40.000Z</published>
-    <updated>2018-12-23T04:33:30.678Z</updated>
+    <updated>2019-10-21T08:38:50.167Z</updated>
     
     <content type="html"><![CDATA[<p>下面是 wikipedia 对于树的定义：</p>
 <blockquote>
@@ -600,7 +626,7 @@
 </blockquote>
 <h3 id="术语"><a href="#术语" class="headerlink" title="术语"></a>术语</h3><p><strong>节点的度</strong>：一个节点含有的子树的个数称为该节点的度；<br><strong>树的度</strong>：一棵树中最大的节点的度称为树的度；<br><strong>叶子结点</strong>：度为零的节点；<br><strong>分支节点</strong>：度不为零的节点；<br><strong>父节点</strong>：若一个节点含有字节点，则这个节点称为该字节点的父节点；<br><strong>子节点</strong>：一个节点含有的子树的根节点称为该节点的字节点；<br><strong>兄弟节点</strong>：具有相同父节点的节点称为兄弟节点；<br><strong>节点的层次</strong>：从根开始定义，根为第一层，根的子节点为第2层，以此类推；<br><strong>树的高度或深度</strong>：树中节点的最大层次；<br><strong>堂兄弟节点</strong>：父节点在同一层的节点互为堂兄弟；<br><strong>节点的祖先</strong>：从根到该节点所经分支上的所有节点；<br><strong>子孙</strong>：以某节点为根的子树中任一节点都称为该节点的子孙；<br><strong>森林</strong>：由 m（m &gt;= 0）棵互不相交的树的结合成为森林；<br><img src="http://wx2.sinaimg.cn/large/9302210cly1fyghx5gzzej207t07j74a.jpg" alt=""><br>如上图 B 节点的度为 2，C 的度为 1，整棵树的高度为 2。这棵树的叶子结点有 D、G、F，剩下的是分支节点。A 是 B 的父节点，A 是 C 的父节点，B 和 C 是兄弟节点。A 节点的层次为 1， B 节点的层次为 2，D 节点的层次为 3，树的高度为 3， D、E、F互为堂兄弟。</p>
 <h3 id="树的种类"><a href="#树的种类" class="headerlink" title="树的种类"></a>树的种类</h3><p>树的种类可以分为两种，分别是<strong>无序树</strong>和<strong>有序树</strong>。无序树树中任意节点的子节点之间没有顺序关系，无序树也可以称为自由树；有序树表示树中任意节点的子节点之间有顺序关系。</p>
-<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><p>二叉树是属于有序树中的一种，每个节点最多含有两个字树的树称为二叉树。</p>
+<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><p>二叉树是属于有序树中的一种，每个节点最多含有两个子树的树称为二叉树。</p>
 <p>三种遍历方式（递归方式）：</p>
 <p>先序遍历： 根节点-左节点-右节点<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">preOrder</span><span class="params">(Node node)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(node != <span class="keyword">null</span>) &#123;</div><div class="line">		System.out.print(node.data + <span class="string">"--&gt;"</span>);</div><div class="line">		preOrder(node.left);</div><div class="line">		preOrder(node.right);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>中序遍历： 左节点-根节点-右节点<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">inOrder</span><span class="params">(Node node)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(node != <span class="keyword">null</span>) &#123;</div><div class="line">		inOrder(node.left);</div><div class="line">		System.out.print(node.data + <span class="string">"--&gt;"</span>);</div><div class="line">		inOrder(node.right);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
@@ -695,69 +721,6 @@
     <summary type="html">
     
       本文主要介绍了栈的基本知识。
-    
-    </summary>
-    
-      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
-    
-    
-      <category term="DSA" scheme="http://yoursite.com/tags%C3%9F/DSA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>重拾  DSA 之链表</title>
-    <link href="http://yoursite.com/2017/08/11/%E9%87%8D%E6%8B%BE-DSA-%E4%B9%8B%E9%93%BE%E8%A1%A8/"/>
-    <id>http://yoursite.com/2017/08/11/重拾-DSA-之链表/</id>
-    <published>2017-08-11T07:40:59.000Z</published>
-    <updated>2019-10-12T11:07:58.632Z</updated>
-    
-    <content type="html"><![CDATA[<p>下面是 wikipedia 对于链表的定义：</p>
-<blockquote>
-<p><strong>链表</strong>（Linked list）是一种常见的基础数据结构，是一种线性表，但是并不会按线性的顺序存储数据，而是在每一个节点里存到下一个节点的指针(Pointer)。由于不必须按顺序存储，链表在插入的时候可以达到   O(1) 的复杂度，比另一种线性表顺序表快得多，但是查找一个节点或者访问特定编号的节点则需要 O(n) 的时间，而顺序表相应的时间复杂度分别是 O(logn) 和 O(1)。</p>
-</blockquote>
-<ul>
-<li>添加<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(Object data)</span> </span>&#123;</div><div class="line">	<span class="comment">//如果头节点为空，则创建一个新节点，并将其设置为头节点以及当前节点。</span></div><div class="line">	<span class="keyword">if</span>(head == <span class="keyword">null</span>) &#123;</div><div class="line">		head = <span class="keyword">new</span> Node(data);</div><div class="line">		current = head;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span> &#123;</div><div class="line">		current.next = <span class="keyword">new</span> Node(data);</div><div class="line">		current = current.next;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<ul>
-<li>插入<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">insert</span><span class="params">(<span class="keyword">int</span> index, Object data)</span> </span>&#123;</div><div class="line">	current = head;</div><div class="line">	<span class="keyword">if</span>(index == <span class="number">0</span>) &#123;</div><div class="line">		head = <span class="keyword">new</span> Node(data);</div><div class="line">		head.next = current;</div><div class="line">		<span class="keyword">return</span>;</div><div class="line">	&#125;</div><div class="line">	Node preNode = <span class="keyword">null</span>;</div><div class="line">	<span class="keyword">while</span>(current != <span class="keyword">null</span>) &#123;</div><div class="line">		<span class="keyword">if</span>((<span class="keyword">int</span>)current.data == index) &#123;</div><div class="line">			Node node = <span class="keyword">new</span> Node(data);</div><div class="line">			preNode.next = node;</div><div class="line">			node.next = current;</div><div class="line">			<span class="keyword">return</span>;</div><div class="line">		&#125;</div><div class="line">		preNode = current;</div><div class="line">		current = current.next;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<ul>
-<li>删除<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</div><div class="line">	current = head;</div><div class="line">	<span class="keyword">int</span> pos = <span class="number">0</span>;</div><div class="line">	Node preNode = head;</div><div class="line">	<span class="keyword">while</span>(current != <span class="keyword">null</span>) &#123;</div><div class="line">		<span class="keyword">if</span>(pos == index) &#123;</div><div class="line">			<span class="keyword">if</span>(pos == <span class="number">0</span>)</div><div class="line">				head = current.next;</div><div class="line">			<span class="comment">//判断当前节点是否还有下一个节点，有则将前一个节点的next指向下一个节点，</span></div><div class="line">			<span class="comment">//无则将前一个节点的next指向设置为null</span></div><div class="line">			<span class="keyword">else</span> &#123;</div><div class="line">				<span class="keyword">if</span>(current.next != <span class="keyword">null</span>) &#123;</div><div class="line">					preNode.next = current.next;</div><div class="line">				&#125;</div><div class="line">				<span class="keyword">else</span> &#123;</div><div class="line">					preNode.next = <span class="keyword">null</span>;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			<span class="keyword">return</span>;</div><div class="line">		&#125;</div><div class="line">		preNode = current;</div><div class="line">		current = current.next;</div><div class="line">		pos++;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<ul>
-<li>查找<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">private</span> Node <span class="title">find</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</div><div class="line">	current = head;</div><div class="line">	<span class="keyword">int</span> pos = <span class="number">0</span>;</div><div class="line">	<span class="keyword">while</span>(current != <span class="keyword">null</span>) &#123;</div><div class="line">		<span class="keyword">if</span>(index == pos) &#123;</div><div class="line">			<span class="keyword">return</span> current;</div><div class="line">		&#125;</div><div class="line">		current = current.next;</div><div class="line">		pos++;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<ul>
-<li>获取链表中节点的个数<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getLinkListLength</span><span class="params">()</span> </span>&#123;</div><div class="line">	current = head;</div><div class="line">	<span class="keyword">int</span> length = <span class="number">0</span>;</div><div class="line">	<span class="keyword">while</span>(current != <span class="keyword">null</span>) &#123;</div><div class="line">		length++;</div><div class="line">		current = current.next;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> length;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<ul>
-<li>链表反转<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">reverseLinkList</span><span class="params">()</span> </span>&#123;</div><div class="line">	current = head;</div><div class="line">	<span class="keyword">while</span>(current != <span class="keyword">null</span>) &#123;</div><div class="line">		Node preHead = reverseHead;</div><div class="line">		reverseHead = current;</div><div class="line">		current = current.next;</div><div class="line">		<span class="keyword">if</span>(preHead != <span class="keyword">null</span>) &#123;</div><div class="line">			reverseHead.next = preHead;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span> &#123;</div><div class="line">			reverseHead.next = <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<ul>
-<li>链表反转（递归方式）<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">private</span> Node <span class="title">reverseLinkListRec</span><span class="params">(Node head)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(head == <span class="keyword">null</span> || head.next == <span class="keyword">null</span>)</div><div class="line">		<span class="keyword">return</span> head;</div><div class="line">	Node newHead = reverseLinkListRec(head.next);</div><div class="line">	head.next.next = head;</div><div class="line">	head.next = <span class="keyword">null</span>;</div><div class="line">	<span class="keyword">return</span> newHead;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<ul>
-<li><p>获取倒数第 index 节点（先让当前节点移动到第 index 个节点，再创建一个节点 start 指向头节点，当前节点和 start 节点同时移动，当当前节点移动到最后一个节点时，start 指向的便是倒数第 index 节点）</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">getReciprocalNode</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(index == <span class="number">0</span>)</div><div class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">	current = head;</div><div class="line">	Node start = head;</div><div class="line">	<span class="keyword">while</span>(current != <span class="keyword">null</span>) &#123;</div><div class="line">		index--;</div><div class="line">		<span class="keyword">if</span>(index == <span class="number">0</span>)</div><div class="line">			<span class="keyword">break</span>;</div><div class="line">		current = current.next;</div><div class="line">	&#125;</div><div class="line">	<span class="comment">// 长度大于链表长度</span></div><div class="line">	<span class="keyword">if</span>(current == <span class="keyword">null</span>) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">while</span>(current.next != <span class="keyword">null</span>) &#123;</div><div class="line">		current = current.next;</div><div class="line">		start = start.next;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> start;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>获取链表的中间节点(初始化两个节点都指向头节点，一个节点每次移动一个节点，另一个每次移动两个节点，当第二个节点移动到链表末尾时，第一个节点指向的节点即是链表的中间节点)</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">private</span> Node <span class="title">getMiddleNode</span><span class="params">()</span> </span>&#123;</div><div class="line">	Node oneStepNode = head;</div><div class="line">	Node twoStepNode = head;</div><div class="line">	<span class="comment">//加入小于三个节点则返回第一个节点作为中间节点</span></div><div class="line">	<span class="keyword">if</span>(head.next == <span class="keyword">null</span> || head.next.next == <span class="keyword">null</span>) &#123;</div><div class="line">		<span class="keyword">return</span> current;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">while</span>(twoStepNode.next != <span class="keyword">null</span> &amp;&amp; twoStepNode.next.next != <span class="keyword">null</span>) &#123;</div><div class="line">		twoStepNode = twoStepNode.next.next;</div><div class="line">		oneStepNode = oneStepNode.next;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> oneStepNode;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><a href="https://github.com/lucien623/DSA_Review/blob/master/LinkList.java" target="_blank" rel="external">Source Code</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      本文主要介绍了链表的一些操作。
     
     </summary>
     
