@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-10-24T13:21:33.902Z</updated>
+  <updated>2019-10-26T10:57:57.072Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,36 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>重拾 DSA 之二叉搜索树</title>
+    <link href="http://yoursite.com/2019/10/26/%E9%87%8D%E6%8B%BE-DSA-%E4%B9%8B%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/"/>
+    <id>http://yoursite.com/2019/10/26/重拾-DSA-之二叉搜索树/</id>
+    <published>2019-10-26T05:49:48.000Z</published>
+    <updated>2019-10-26T10:57:57.072Z</updated>
+    
+    <content type="html"><![CDATA[<p>二叉搜索树即 Binary Search Tree，也可以称为二叉查找树或者有序二叉树。它可以是空树或者是具有以下性质的二叉树（from wiki）：</p>
+<blockquote>
+<p>1.若任意节点的左子树不空，则左子树上所有节点的值均小于它的根节点的值；<br>2.若任意节点的右子树不空，则右子树上所有节点的值均大于它的根节点的值；<br>3.任意节点的左、右子树也分别为二叉查找树；<br>4.没有键值相等的节点。</p>
+</blockquote>
+<p>首先定义节点<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span> </span>&#123;</div><div class="line">	TreeNode left,right;</div><div class="line">	<span class="keyword">int</span> value, num = <span class="number">1</span>;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">TreeNode</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.value = value;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>插入节点，如果根节点为空则直接插入，否则与当前节点的值判断，如果大于当前节点，则和左子树中的节点判断，反之则和右子树中的节点做判断，直到比较到叶子节点最终确定插入位置，相等的特殊情况则将当前节点的 num 加 1，结束插入节点<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">insertNode</span><span class="params">(TreeNode node)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(root == <span class="keyword">null</span>) &#123;</div><div class="line">		root = node;</div><div class="line">		<span class="keyword">return</span>;</div><div class="line">	&#125;</div><div class="line">	TreeNode temp = root;</div><div class="line">	<span class="keyword">for</span>(;;) &#123;</div><div class="line">		<span class="keyword">if</span>(node.value &gt; temp.value) &#123;</div><div class="line">			<span class="keyword">if</span>(temp.right != <span class="keyword">null</span>)</div><div class="line">				temp = temp.right;</div><div class="line">			<span class="keyword">else</span> &#123;</div><div class="line">				temp.right = node;</div><div class="line">				<span class="keyword">return</span>;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span> <span class="keyword">if</span> (node.value &lt; temp.value) &#123;</div><div class="line">			<span class="keyword">if</span>(temp.left != <span class="keyword">null</span>)</div><div class="line">				temp = temp.left;</div><div class="line">			<span class="keyword">else</span> &#123;</div><div class="line">				temp.left = node;</div><div class="line">				<span class="keyword">return</span>;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">else</span> &#123;</div><div class="line">			temp.num++;</div><div class="line">			<span class="keyword">return</span>;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>删除节点的逻辑分三种情况，如果待删除的节点是叶子节点，那么可以直接删除；如果待删除的节点只有左子树或者右子树，那么可以重接左子树或右子树，即把待删除节点的左节点或者右节点直接替代；如果待删除节点即有左子树又有右子树，那么把左子树中的最小值替代待删除节点。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">deleteNode</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(root == <span class="keyword">null</span>)</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	TreeNode parent;</div><div class="line">	TreeNode current = parent = root;</div><div class="line">	<span class="keyword">for</span>(;;)&#123;</div><div class="line">		<span class="keyword">if</span>(current.value == value)</div><div class="line">			<span class="keyword">break</span>;</div><div class="line">		parent = current;</div><div class="line">		<span class="keyword">if</span>(current.value &lt; value)</div><div class="line">			current = current.right;</div><div class="line">		<span class="keyword">else</span> </div><div class="line">			current = current.left;</div><div class="line">		<span class="keyword">if</span>(current == <span class="keyword">null</span>)</div><div class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	<span class="comment">//叶子节点，直接删除</span></div><div class="line">	<span class="keyword">if</span>(current.left == <span class="keyword">null</span> &amp;&amp; current.right == <span class="keyword">null</span>) &#123;</div><div class="line">		 actualDelete(parent, current, <span class="keyword">null</span>);</div><div class="line">	&#125;</div><div class="line">	<span class="comment">//左子树为空,重接右子树</span></div><div class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(current.left == <span class="keyword">null</span>)&#123;</div><div class="line">		actualDelete(parent, current, current.right);</div><div class="line">	&#125;</div><div class="line">	<span class="comment">//右子树为空,重接左子树</span></div><div class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(current.right == <span class="keyword">null</span>)&#123;</div><div class="line">		actualDelete(parent, current, current.left);</div><div class="line">	&#125;</div><div class="line">	<span class="comment">//左子树和右子树都不为空，那么将右子树中的最小节点替代被删除的节点</span></div><div class="line">	<span class="keyword">else</span> &#123;</div><div class="line">		TreeNode temp = current.left;</div><div class="line">		TreeNode tempParent = current;</div><div class="line">		<span class="keyword">while</span>(temp.left != <span class="keyword">null</span>) &#123;</div><div class="line">			tempParent = temp;</div><div class="line">			temp = temp.left;</div><div class="line">		&#125;</div><div class="line">		actualDelete(parent, current, temp);</div><div class="line">		temp.left = current.left;</div><div class="line">		temp.right = current.right;</div><div class="line">		tempParent.left = <span class="keyword">null</span>;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">actualDelete</span><span class="params">(TreeNode parent, TreeNode deleteNode, TreeNode next)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(parent.left == deleteNode)</div><div class="line">		parent.left = next;</div><div class="line">	<span class="keyword">else</span> </div><div class="line">		parent.right = next;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可以用中序遍历输出有序值<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">inOrder</span><span class="params">(TreeNode node)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(node != <span class="keyword">null</span>) &#123;</div><div class="line">		inOrder(node.left);</div><div class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; node.num; i++)</div><div class="line">			System.out.print(node.value + <span class="string">"--&gt;"</span>);</div><div class="line">		inOrder(node.right);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+]]></content>
+    
+    <summary type="html">
+    
+      本文主要介绍了二叉搜索树的基本知识。
+    
+    </summary>
+    
+      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="DSA" scheme="http://yoursite.com/tags%C3%9F/DSA/"/>
+    
+  </entry>
   
   <entry>
     <title>ARouter原理探析</title>
@@ -430,7 +460,7 @@
     <link href="http://yoursite.com/2018/08/11/Java%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/"/>
     <id>http://yoursite.com/2018/08/11/Java反射机制/</id>
     <published>2018-08-11T13:53:45.000Z</published>
-    <updated>2019-10-12T11:27:12.055Z</updated>
+    <updated>2019-10-26T02:08:16.252Z</updated>
     
     <content type="html"><![CDATA[<h3 id="什么是反射？"><a href="#什么是反射？" class="headerlink" title="什么是反射？"></a>什么是反射？</h3><blockquote>
 <p>Reflection is a feature in the Java programming language. It allows an executing Java program to examine or “introspect” upon itself, and manipulate internal properties of the program. For example, it’s possible for a Java class to obtain the names of all its members and display them. — <a href="https://www.oracle.com/technetwork/articles/java/javareflection-1536171.html" target="_blank" rel="external">from oracle</a></p>
@@ -440,7 +470,7 @@
 <h3 id="获取-Class-对象"><a href="#获取-Class-对象" class="headerlink" title="获取 Class 对象"></a>获取 Class 对象</h3><p>获取 Class 对象有如下三种方式：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Class clsA = Class.forName(<span class="string">"com.djp.demo.Student"</span>);</div><div class="line">Class clsB = Student.class;</div><div class="line">Class clsC = <span class="keyword">new</span> Student().getClass();</div></pre></td></tr></table></figure></p>
 <h3 id="获取方法"><a href="#获取方法" class="headerlink" title="获取方法"></a>获取方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getMethods</span><span class="params">(Class cls)</span> </span>&#123;</div><div class="line">	Method[] methods = cls.getDeclaredMethods();</div><div class="line">	<span class="keyword">for</span> (Method method : methods) &#123;</div><div class="line">		System.out.println(method.toString());</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>通过<code>getDeclaredMethods()</code>方法可以返回类或者接口的所有方法，包括 public, protected, defalut, and private，但无法获取到继承的方法。打印信息如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">public java.lang.String com.djp.demo.Student.getName()</div><div class="line">public void com.djp.demo.Student.setName(java.lang.String)</div><div class="line">public int com.djp.demo.Student.getAge()</div><div class="line">public java.lang.String com.djp.demo.Student.getGender()</div><div class="line">public void com.djp.demo.Student.setGender(java.lang.String)</div><div class="line">public void com.djp.demo.Student.setAge(int)</div></pre></td></tr></table></figure></p>
-<p>另一个<code>getMethods()</code>方法也可以获取到类和接口的所有方法，于上面方法不同的是调用这个方法只会返回定义为 public 的 Method 对象，包括继承的方法。</p>
+<p>另一个<code>getMethods()</code>方法也可以获取到类和接口的所有方法，与上面方法不同的是调用这个方法只会返回定义为 public 的 Method 对象，包括继承的方法。</p>
 <h3 id="创建实例"><a href="#创建实例" class="headerlink" title="创建实例"></a>创建实例</h3><p>有两种方法可以创建实例，第一种是直接通过 class 对象的 newInstance 创建：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Class clsA = Class.forName(<span class="string">"com.djp.demo.Student"</span>);</div><div class="line">clsA.newInstance();</div></pre></td></tr></table></figure></p>
 <p>第二种通过构造器创建：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Constructor constructor = cls.getConstructor(<span class="keyword">int</span>.class, String.class, String.class);</div><div class="line">Student student = (Student) constructor.newInstance(<span class="number">18</span>, <span class="string">"lucien"</span>, <span class="string">"man"</span>);</div></pre></td></tr></table></figure></p>
 <h3 id="通过-name-调用方法"><a href="#通过-name-调用方法" class="headerlink" title="通过 name 调用方法"></a>通过 name 调用方法</h3><p>首先根据 name 获取到 Method 对象，然后调用 invoke 方法传入对应参数就可以调用方法了，代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Method method = cls.getMethod(<span class="string">"getAge"</span>);</div><div class="line">method.invoke(<span class="keyword">new</span> Student(<span class="number">22</span>,<span class="string">"lucien"</span>,  <span class="string">"man"</span>));</div></pre></td></tr></table></figure></p>
@@ -679,48 +709,6 @@
     
     
       <category term="android" scheme="http://yoursite.com/tags%C3%9F/android/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>重拾 DSA 之树</title>
-    <link href="http://yoursite.com/2017/08/19/%E9%87%8D%E6%8B%BE-DSA-%E4%B9%8B%E6%A0%91/"/>
-    <id>http://yoursite.com/2017/08/19/重拾-DSA-之树/</id>
-    <published>2017-08-19T01:50:40.000Z</published>
-    <updated>2019-10-21T08:38:50.167Z</updated>
-    
-    <content type="html"><![CDATA[<p>下面是 wikipedia 对于树的定义：</p>
-<blockquote>
-<p><strong>树</strong>（英语：tree）是一种抽象数据类型（ADT）或是实作这种抽象数据类型的数据结构，用来模拟具有树状结构性质的数据集合。它是由 n（n&gt;0）个有限节点组成一个具有层次关系的集合。把它叫做“树”是因为它看起来像一棵倒挂的树，也就是说它是根朝上，而叶朝下的。它具有以下的特点：</p>
-<ul>
-<li>每个节点有零个或多个子节点；</li>
-<li>没有父节点的节点称为根节点；</li>
-<li>每一个非根节点有且只有一个父节点；</li>
-<li>除了根节点外，每个子节点可以分为多个不相交的子树；</li>
-</ul>
-</blockquote>
-<h3 id="术语"><a href="#术语" class="headerlink" title="术语"></a>术语</h3><p><strong>节点的度</strong>：一个节点含有的子树的个数称为该节点的度；<br><strong>树的度</strong>：一棵树中最大的节点的度称为树的度；<br><strong>叶子结点</strong>：度为零的节点；<br><strong>分支节点</strong>：度不为零的节点；<br><strong>父节点</strong>：若一个节点含有字节点，则这个节点称为该字节点的父节点；<br><strong>子节点</strong>：一个节点含有的子树的根节点称为该节点的字节点；<br><strong>兄弟节点</strong>：具有相同父节点的节点称为兄弟节点；<br><strong>节点的层次</strong>：从根开始定义，根为第一层，根的子节点为第2层，以此类推；<br><strong>树的高度或深度</strong>：树中节点的最大层次；<br><strong>堂兄弟节点</strong>：父节点在同一层的节点互为堂兄弟；<br><strong>节点的祖先</strong>：从根到该节点所经分支上的所有节点；<br><strong>子孙</strong>：以某节点为根的子树中任一节点都称为该节点的子孙；<br><strong>森林</strong>：由 m（m &gt;= 0）棵互不相交的树的结合成为森林；<br><img src="http://wx2.sinaimg.cn/large/9302210cly1fyghx5gzzej207t07j74a.jpg" alt=""><br>如上图 B 节点的度为 2，C 的度为 1，整棵树的高度为 2。这棵树的叶子结点有 D、G、F，剩下的是分支节点。A 是 B 的父节点，A 是 C 的父节点，B 和 C 是兄弟节点。A 节点的层次为 1， B 节点的层次为 2，D 节点的层次为 3，树的高度为 3， D、E、F互为堂兄弟。</p>
-<h3 id="树的种类"><a href="#树的种类" class="headerlink" title="树的种类"></a>树的种类</h3><p>树的种类可以分为两种，分别是<strong>无序树</strong>和<strong>有序树</strong>。无序树树中任意节点的子节点之间没有顺序关系，无序树也可以称为自由树；有序树表示树中任意节点的子节点之间有顺序关系。</p>
-<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><p>二叉树是属于有序树中的一种，每个节点最多含有两个子树的树称为二叉树。</p>
-<p>三种遍历方式（递归方式）：</p>
-<p>先序遍历： 根节点-左节点-右节点<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">preOrder</span><span class="params">(Node node)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(node != <span class="keyword">null</span>) &#123;</div><div class="line">		System.out.print(node.data + <span class="string">"--&gt;"</span>);</div><div class="line">		preOrder(node.left);</div><div class="line">		preOrder(node.right);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>中序遍历： 左节点-根节点-右节点<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">inOrder</span><span class="params">(Node node)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(node != <span class="keyword">null</span>) &#123;</div><div class="line">		inOrder(node.left);</div><div class="line">		System.out.print(node.data + <span class="string">"--&gt;"</span>);</div><div class="line">		inOrder(node.right);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>后续遍历： 左节点-右节点-根节点<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">postOrder</span><span class="params">(Node node)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span>(node != <span class="keyword">null</span>) &#123;</div><div class="line">		postOrder(node.left);</div><div class="line">		postOrder(node.right);</div><div class="line">		System.out.print(node.data + <span class="string">"--&gt;"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p><a href="https://github.com/lucien623/DSA_Review/blob/master/BinaryTree.java" target="_blank" rel="external">Source Code</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;下面是 wikipedia 对于树的定义：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;树&lt;/strong&gt;（英语：tree）是一种抽象数据类型（ADT）或是实作这种抽象数据类型的数据结构，用来模拟具有树状结构性质的数据集合。它是由 n（n&amp;gt;0）个有限节点
-    
-    </summary>
-    
-      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
-    
-    
-      <category term="DSA" scheme="http://yoursite.com/tags%C3%9F/DSA/"/>
     
   </entry>
   
