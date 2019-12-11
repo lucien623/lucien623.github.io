@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-10-27T01:45:02.814Z</updated>
+  <updated>2019-12-11T01:32:59.504Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -16,11 +16,37 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>mac中修改host的方法</title>
+    <link href="http://yoursite.com/2019/12/11/mac%E4%B8%AD%E4%BF%AE%E6%94%B9host%E7%9A%84%E6%96%B9%E6%B3%95/"/>
+    <id>http://yoursite.com/2019/12/11/mac中修改host的方法/</id>
+    <published>2019-12-11T01:22:16.000Z</published>
+    <updated>2019-12-11T01:32:59.504Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="Step-1"><a href="#Step-1" class="headerlink" title="Step 1"></a>Step 1</h3><p>输入命令<code>sudo vi /etc/hosts</code></p>
+<h3 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h3><p>输入 pc 的密码</p>
+<h3 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h3><p>按<code>i</code>键进入编辑模式，修改 host</p>
+<h3 id="Step-4"><a href="#Step-4" class="headerlink" title="Step 4"></a>Step 4</h3><p>编辑完成后，按<code>esc</code>键退出编辑模式</p>
+<h3 id="Step-5"><a href="#Step-5" class="headerlink" title="Step 5"></a>Step 5</h3><p>同时按<code>shift</code>和<code>:</code>键，并输入<code>wq!</code>，按回车键即编辑完成</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;Step-1&quot;&gt;&lt;a href=&quot;#Step-1&quot; class=&quot;headerlink&quot; title=&quot;Step 1&quot;&gt;&lt;/a&gt;Step 1&lt;/h3&gt;&lt;p&gt;输入命令&lt;code&gt;sudo vi /etc/hosts&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&quot;Step-2
+    
+    </summary>
+    
+      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+  </entry>
+  
+  <entry>
     <title>重拾 DSA 之二叉搜索树</title>
     <link href="http://yoursite.com/2019/10/26/%E9%87%8D%E6%8B%BE-DSA-%E4%B9%8B%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/"/>
     <id>http://yoursite.com/2019/10/26/重拾-DSA-之二叉搜索树/</id>
     <published>2019-10-26T05:49:48.000Z</published>
-    <updated>2019-10-27T01:45:02.814Z</updated>
+    <updated>2019-10-27T01:46:11.070Z</updated>
     
     <content type="html"><![CDATA[<p>二叉搜索树即 Binary Search Tree，也可以称为二叉查找树或者有序二叉树。它可以是空树或者是具有以下性质的二叉树（from wiki）：</p>
 <blockquote>
@@ -684,32 +710,6 @@
     
     
       <category term="DSA" scheme="http://yoursite.com/tags%C3%9F/DSA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Android抽象布局</title>
-    <link href="http://yoursite.com/2018/05/20/Android%E6%8A%BD%E8%B1%A1%E5%B8%83%E5%B1%80/"/>
-    <id>http://yoursite.com/2018/05/20/Android抽象布局/</id>
-    <published>2018-05-20T10:03:24.000Z</published>
-    <updated>2019-10-12T11:23:44.583Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="1-lt-include-gt-标签"><a href="#1-lt-include-gt-标签" class="headerlink" title="1.&lt;include /&gt; 标签"></a>1.<code>&lt;include /&gt;</code> 标签</h3><p><code>&lt;include /&gt;</code> 标签主要解决布局重用的问题，在我们大多数的 app 中的标题栏布局都是相似的，这个时候就可以用 <code>&lt;include /&gt;</code> 标签重用布局文件了。使用方法如下：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></div><div class="line">	<span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></div><div class="line">	<span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></div><div class="line">	<span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></div><div class="line">	<span class="attr">android:orientation</span>=<span class="string">"vertical"</span>&gt;</div><div class="line"></div><div class="line">	<span class="tag">&lt;<span class="name">include</span> <span class="attr">layout</span>=<span class="string">"@layout/include_head"</span>/&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<h3 id="2-lt-merge-gt-标签"><a href="#2-lt-merge-gt-标签" class="headerlink" title="2.&lt;merge /&gt; 标签"></a>2.<code>&lt;merge /&gt;</code> 标签</h3><p><code>&lt;merge /&gt;</code> 标签的作用可以减少 UI 的层级，假如要在主布局 <code>LinearLayout</code> 中引入同样是 <code>LinearLayout</code> 的 <code>include</code> 布局，那么便可以将引入布局的最外层布局设置为 <code>&lt;merge /&gt;</code> 标签，这样系统将会自动忽略 <code>&lt;merge /&gt;</code>节点，从而达到减少布局层次的目的。比如：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">merge</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">TextView</span></span></div><div class="line">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:text</span>=<span class="string">"hello"</span> /&gt;</div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">TextView</span></span></div><div class="line">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:text</span>=<span class="string">"world"</span> /&gt;</div><div class="line">    </div><div class="line"><span class="tag">&lt;/<span class="name">merge</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<h3 id="3-lt-ViewStub-gt-标签"><a href="#3-lt-ViewStub-gt-标签" class="headerlink" title="3.&lt;ViewStub /&gt; 标签"></a>3.<code>&lt;ViewStub /&gt;</code> 标签</h3><p><code>&lt;ViewStub /&gt;</code> 标签的作用就是延迟加载布局资源，从而达到加快 UI 初始化速度目的，适用场景如进度条，加载失败布局等一些一开始不需要加载的布局。如：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">android.support.constraint.ConstraintLayout</span> </span></div><div class="line">    <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></div><div class="line">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></div><div class="line">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></div><div class="line">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></div><div class="line">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></div><div class="line">    <span class="attr">tools:context</span>=<span class="string">"com.juhe.generaldemo.MainActivity"</span>&gt;</div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">ViewStub</span></span></div><div class="line">        <span class="attr">android:id</span>=<span class="string">"@+id/viewstub"</span></div><div class="line">        <span class="attr">android:layout</span>=<span class="string">"@layout/viewstub_layout"</span></div><div class="line">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></div><div class="line">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span> /&gt;</div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">android.support.constraint.ConstraintLayout</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<p>想要加载布局时：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ViewStub viewStub = (ViewStub) findViewById(R.id.viewstub);</div><div class="line">viewStub.inflate();</div></pre></td></tr></table></figure></p>
-]]></content>
-    
-    <summary type="html">
-    
-      简单介绍 Android 中 &amp;lt;include /&amp;gt;、 &amp;lt;merge /&amp;gt; 和 &amp;lt;ViewStub /&amp;gt; 标签的使用。
-    
-    </summary>
-    
-      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
-    
-    
-      <category term="android" scheme="http://yoursite.com/tags%C3%9F/android/"/>
     
   </entry>
   
