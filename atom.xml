@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-12-11T01:32:59.504Z</updated>
+  <updated>2019-12-11T01:37:50.380Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://yoursite.com/2019/12/11/mac%E4%B8%AD%E4%BF%AE%E6%94%B9host%E7%9A%84%E6%96%B9%E6%B3%95/"/>
     <id>http://yoursite.com/2019/12/11/mac中修改host的方法/</id>
     <published>2019-12-11T01:22:16.000Z</published>
-    <updated>2019-12-11T01:32:59.504Z</updated>
+    <updated>2019-12-11T01:37:50.380Z</updated>
     
     <content type="html"><![CDATA[<h3 id="Step-1"><a href="#Step-1" class="headerlink" title="Step 1"></a>Step 1</h3><p>输入命令<code>sudo vi /etc/hosts</code></p>
 <h3 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h3><p>输入 pc 的密码</p>
@@ -31,8 +31,7 @@
     
     <summary type="html">
     
-      &lt;h3 id=&quot;Step-1&quot;&gt;&lt;a href=&quot;#Step-1&quot; class=&quot;headerlink&quot; title=&quot;Step 1&quot;&gt;&lt;/a&gt;Step 1&lt;/h3&gt;&lt;p&gt;输入命令&lt;code&gt;sudo vi /etc/hosts&lt;/code&gt;&lt;/p&gt;
-&lt;h3 id=&quot;Step-2
+      对 mac 中如何修改host的简要介绍
     
     </summary>
     
