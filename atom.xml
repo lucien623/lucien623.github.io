@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-05-26T01:53:05.977Z</updated>
+  <updated>2020-11-12T08:58:36.247Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -16,14 +16,45 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>关于PendingIntent数据重复问题</title>
+    <link href="http://yoursite.com/2020/11/12/%E5%85%B3%E4%BA%8EPendingIntent%E6%95%B0%E6%8D%AE%E9%87%8D%E5%A4%8D%E9%97%AE%E9%A2%98/"/>
+    <id>http://yoursite.com/2020/11/12/关于PendingIntent数据重复问题/</id>
+    <published>2020-11-12T08:26:54.000Z</published>
+    <updated>2020-11-12T08:58:36.247Z</updated>
+    
+    <content type="html"><![CDATA[<p>之前在测试推送的过程中发现了一个很奇怪的问题，就是当收到多条推送时，点击推送获取的到的数据都是第一条推送的，经过查找之后，发现了该问题的原因。接下来一段就是来自官网的描述</p>
+<blockquote>
+<p>A PendingIntent itself is simply a reference to a token maintained by the system describing the original data used to retrieve it. This means that, even if its owning application’s process is killed, the PendingIntent itself will remain usable from other processes that have been given it. If the creating application later re-retrieves the same kind of PendingIntent (same operation, same Intent action, data, categories, and components, and same flags), it will receive a PendingIntent representing the same token if that is still valid, and can thus call cancel() to remove it.<br>Because of this behavior, it is important to know when two Intents are considered to be the same for purposes of retrieving a PendingIntent. <strong>A common mistake people make is to create multiple PendingIntent objects with Intents that only vary in their “extra” contents, expecting to get a different PendingIntent each time.</strong> This does not happen. The parts of the Intent that are used for matching are the same ones defined by Intent#filterEquals(Intent). If you use two Intent objects that are equivalent as per Intent#filterEquals(Intent), then you will get the same PendingIntent for both of them.</p>
+</blockquote>
+<p>加粗部分的意思是说，如果<code>PendingIntent</code>只有在<code>Intent</code>中的<code>extra</code>不同的话，那么<code>PendingIntent</code>只会拿到相同的，即第一次的那个，所以问题就出现在这里，官方给了两种这个情况的解决方案</p>
+<blockquote>
+<p>If you truly need multiple distinct PendingIntent objects active at the same time (such as to use as two notifications that are both shown at the same time), then you will need to ensure there is something that is different about them to associate them with different PendingIntents. This may be any of the Intent attributes considered by Intent#filterEquals(Intent), or different request code integers supplied to getActivity(Context, int, Intent, int), getActivities(Context, int, Intent[], int), getBroadcast(Context, int, Intent, int), or getService(Context, int, Intent, int).<br>If you only need one PendingIntent active at a time for any of the Intents you will use, then you can alternatively use the flags FLAG_CANCEL_CURRENT or FLAG_UPDATE_CURRENT to either cancel or modify whatever current PendingIntent is associated with the Intent you are supplying.</p>
+</blockquote>
+<p>第一种方式就是给<code>Intent</code>设置不同的<code>filter</code>或者<code>request code</code>；第二种方式是如果不需要多个<code>PendingIntent</code>，那么可以在<code>flags</code>参数中传入<code>FLAG_CANCEL_CURRENT</code>或者<code>FLAG_UPDATE_CURRENT</code>将<code>PendingIntent</code>更新为最新的那个。因为我这边的情形是需要保留所有的不同的<code>PendingIntent</code>，所以采用了第一种方式，问题解决。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      关于推送过程中遇到 PendingIntent 数据重复问题的解决。
+    
+    </summary>
+    
+      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="android" scheme="http://yoursite.com/tags%C3%9F/android/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Flutter 更新失败问题</title>
     <link href="http://yoursite.com/2020/05/26/Flutter-%E6%9B%B4%E6%96%B0%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98/"/>
     <id>http://yoursite.com/2020/05/26/Flutter-更新失败问题/</id>
     <published>2020-05-26T01:35:24.000Z</published>
-    <updated>2020-05-26T01:53:05.977Z</updated>
+    <updated>2020-05-26T02:08:43.326Z</updated>
     
     <content type="html"><![CDATA[<p>今天在执行<code>flutter upgrade</code>更新<code>flutter</code>时发现了一个更新失败问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Failed to retrieve the Dart SDK from: https://storage.googleapis.com/flutter_infra/flutter/6bc433c6b6b5b98dcf4cc11aff31cdee90849f32/dart-sdk-darwin-x64.zip</div></pre></td></tr></table></figure></p>
-<p>发生这个问题的主要原因就是这个网址被墙了，官方也给出了<a href="https://flutter.dev/community/china" target="_blank" rel="external">解决方案</a>，就是给更新网址设置 mirror site，具体的方法就是在 Bash shell 中做如下设置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">export PUB_HOSTED_URL=https://pub.flutter-io.cn</div><div class="line">export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn</div><div class="line">git clone -b dev https://github.com/flutter/flutter.git</div><div class="line">export PATH=&quot;$PWD/flutter/bin:$PATH&quot;</div><div class="line">cd ./flutter</div><div class="line">flutter doctor</div></pre></td></tr></table></figure></p>
+<p>发生这个问题的主要原因就是这个地址被墙了，官方也给出了<a href="https://flutter.dev/community/china" target="_blank" rel="external">解决方案</a>，就是给更新地址设置 mirror site，具体的方法就是在 Bash shell 中做如下设置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">export PUB_HOSTED_URL=https://pub.flutter-io.cn</div><div class="line">export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn</div><div class="line">git clone -b dev https://github.com/flutter/flutter.git</div><div class="line">export PATH=&quot;$PWD/flutter/bin:$PATH&quot;</div><div class="line">cd ./flutter</div><div class="line">flutter doctor</div></pre></td></tr></table></figure></p>
 <p>除了这个 mirror site 之外，还可以用 Shanghai Jiaotong University Linux User Group 的 mirror site：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">FLUTTER_STORAGE_BASE_URL: https:<span class="comment">//mirrors.sjtug.sjtu.edu.cn/</span></div><div class="line">PUB_HOSTED_URL: https:<span class="comment">//dart-pub.mirrors.sjtug.sjtu.edu.cn/</span></div></pre></td></tr></table></figure></p>
 <p>设置好之后就可以发会呆等待其 download 完成了。</p>
 ]]></content>
@@ -653,39 +684,6 @@
     <summary type="html">
     
       关于简答选择排序的简单介绍和 Java 实现。
-    
-    </summary>
-    
-      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
-    
-    
-      <category term="DSA" scheme="http://yoursite.com/tags%C3%9F/DSA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>重拾 DSA 排序算法之快速排序</title>
-    <link href="http://yoursite.com/2018/05/29/%E9%87%8D%E6%8B%BE-DSA-%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E4%B9%8B%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/"/>
-    <id>http://yoursite.com/2018/05/29/重拾-DSA-排序算法之快速排序/</id>
-    <published>2018-05-29T08:23:15.000Z</published>
-    <updated>2018-06-09T08:25:27.626Z</updated>
-    
-    <content type="html"><![CDATA[<p>快速排序的主要运用的就是分治的思想。</p>
-<blockquote>
-<p>The steps are:</p>
-</blockquote>
-<p>1.Pick an element, called a pivot, from the array.</p>
-<p>2.Partitioning: reorder the array so that all elements with values less than the pivot come before the pivot, while all elements with values greater than the pivot come after it (equal values can go either way). After this partitioning, the pivot is in its final position. This is called the partition operation.</p>
-<p>3.Recursively apply the above steps to the sub-array of elements with smaller values and separately to the sub-array of elements with greater values.</p>
-<p>上面是 wiki 中定义的步骤，其实就是先找一个 pivot，一般我们设定数组的第一个或者最后一个元素为 pivot，把数组中小于 pivot 的元素移到左边，大于 pivot 的元素移到右边，然后以同样的方式再对左右两边的子数组操作，最后就会得到一个有序数组。</p>
-<p>sample:<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Quicksort-diagram.svg/200px-Quicksort-diagram.svg.png" alt=""> </p>
-<p>以下是代码实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sort</span><span class="params">(<span class="keyword">int</span>[] array, <span class="keyword">int</span> low, <span class="keyword">int</span> high)</span> </span>&#123;</div><div class="line">	<span class="keyword">int</span> l = low;</div><div class="line">	<span class="keyword">int</span> h = high;</div><div class="line">	<span class="keyword">if</span>(l &gt;= h)</div><div class="line">		<span class="keyword">return</span>;</div><div class="line">	<span class="keyword">int</span> pivot = array[high];</div><div class="line">	<span class="keyword">while</span>(l &lt; h) &#123;</div><div class="line">		<span class="keyword">while</span>(array[l] &gt; pivot &amp;&amp; l &lt; h) &#123;</div><div class="line">			<span class="keyword">int</span> temp = array[h - <span class="number">1</span>];</div><div class="line">			array[h] = array[l];</div><div class="line">			array[l] = temp;</div><div class="line">			h--;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">while</span>(array[l] &lt;= pivot &amp;&amp; l &lt; h) &#123;</div><div class="line">			l++;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	array[l] = pivot;</div><div class="line">	sort(array, low, l - <span class="number">1</span>);</div><div class="line">	sort(array, l + <span class="number">1</span>, high);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>快速排序的平均复杂度为 O(nlogn),最差情况下为 O(n^2)。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      关于快速排序的简单介绍和 Java 实现。
     
     </summary>
     
