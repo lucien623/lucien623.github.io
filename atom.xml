@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2021-12-14T12:21:30.174Z</updated>
+  <updated>2021-12-14T12:23:47.426Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://yoursite.com/2021/12/14/Android-%E5%AD%98%E5%82%A8-API/"/>
     <id>http://yoursite.com/2021/12/14/Android-存储-API/</id>
     <published>2021-12-14T11:56:02.000Z</published>
-    <updated>2021-12-14T12:21:30.174Z</updated>
+    <updated>2021-12-14T12:23:47.426Z</updated>
     
     <content type="html"><![CDATA[<h3 id="internal-storage-对应的存储目录"><a href="#internal-storage-对应的存储目录" class="headerlink" title="internal storage 对应的存储目录"></a>internal storage 对应的存储目录</h3><p>getCacheDir(): <code>/data/data/&lt;application package&gt;/cache</code></p>
 <p>getFilesDir(): <code>/data/data/&lt;application package&gt;/files</code></p>
@@ -39,7 +39,7 @@
     
     <summary type="html">
     
-      &lt;h3 id=&quot;internal-storage-对应的存储目录&quot;&gt;&lt;a href=&quot;#internal-storage-对应的存储目录&quot; class=&quot;headerlink&quot; title=&quot;internal storage 对应的存储目录&quot;&gt;&lt;/a&gt;internal stora
+      关于 Android 存储 API 的简单笔记。
     
     </summary>
     
