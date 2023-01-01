@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2022-02-15T06:34:36.465Z</updated>
+  <updated>2023-01-01T14:38:20.742Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,45 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>斯多葛主义</title>
+    <link href="http://yoursite.com/2023/01/01/%E6%96%AF%E5%A4%9A%E8%91%9B%E4%B8%BB%E4%B9%89/"/>
+    <id>http://yoursite.com/2023/01/01/斯多葛主义/</id>
+    <published>2023-01-01T14:33:48.000Z</published>
+    <updated>2023-01-01T14:38:20.742Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="斯多葛主义的心理技巧"><a href="#斯多葛主义的心理技巧" class="headerlink" title="斯多葛主义的心理技巧"></a>斯多葛主义的心理技巧</h3><ul>
+<li><p>消极想象</p>
+<p>  消极想象的三个好处：一是当我们做消极想象的时候，会尽力去避免消极想象的事情发生；二是当消极想象中的事情真的发生时，通过这种方式可以减轻由此带来的痛苦；三是进行消极想象可以阻止我们享乐适应，因为人们通常在满足某种欲望的时候，往往持续的幸福不会很久就会乏味，消极想象可以防止这种幸福感的消失。</p>
+</li>
+<li><p>控制三分法</p>
+<p>  控制三分法将事物分成三种类别。第一种是我们完全能够控制的事物，比如我们的目标和价值观；第二种是我们一点也不能控制的事物，比如明天是否会出现太阳；第三种则是我们能够控制一些但却有不能完全控制的事物，比如能否赢下一场网球赛。控制三分法让我们应当关注第一种事物，不关注第二种事物，在面对第三种我们能够控制一些但又无法完全控制的事物时，我们应当将外在目标内在化，比如应该将「使他爱我」这个目标转换成让自己值得被爱；面对老板，尽自己的最大努力做好工作，不论随后老板对我有什么反应。</p>
+</li>
+<li><p>宿命论</p>
+<p>  我们应当针对过去和现在采用宿命论，「接受命运的安排」，拒绝考虑自身的情况如何可能会变得更好（对过去的懊悔）。</p>
+</li>
+<li><p>自我否定</p>
+<p>  斯多葛主义不仅要求我们进行消极想象，还建议我们应时不常地给自己制造机会去经历本来可以避免的不舒适。对于这种行为的好处可以有三点：一是可以使得我们变得更加坚韧，以便抵御将来可能降临的命运；二是经历微小不适可以使自己变得有信心，认为自己同样可以承受更严重的不信；三是可以帮助我们享受我们已经拥有的东西。</p>
+</li>
+<li><p>沉思：监督自我践行斯多葛主义</p>
+<p>  我们应当定期对日常生活中的事情进行思考，根据斯多葛主义的原则，应该如何处理发生的事情。</p>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;斯多葛主义的心理技巧&quot;&gt;&lt;a href=&quot;#斯多葛主义的心理技巧&quot; class=&quot;headerlink&quot; title=&quot;斯多葛主义的心理技巧&quot;&gt;&lt;/a&gt;斯多葛主义的心理技巧&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;消极想象&lt;/p&gt;
+&lt;p&gt;  消极想象的三个好处：一是当我们
+    
+    </summary>
+    
+      <category term="阅读" scheme="http://yoursite.com/categories/%E9%98%85%E8%AF%BB/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>记关于Fragment-java.lang.NoSuchMethodException的一个报错</title>
@@ -664,43 +703,6 @@
     
     
       <category term="Java" scheme="http://yoursite.com/tags%C3%9F/Java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>数据库事务学习笔记</title>
-    <link href="http://yoursite.com/2018/08/09/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    <id>http://yoursite.com/2018/08/09/数据库事务学习笔记/</id>
-    <published>2018-08-09T13:17:28.000Z</published>
-    <updated>2019-10-12T11:40:58.376Z</updated>
-    
-    <content type="html"><![CDATA[<p>数据库事务（简称事务）：是数据库管理系统（Database Managment System 简称 DBMS）执行过程中的一个逻辑单位，是由有限的数据库操作序列构成。</p>
-<p>事务的特性：</p>
-<ul>
-<li>原子性：事务作为一个整体执行，包含在其中的数据库操作要么全部执行，要么不执行。</li>
-<li>一致性：事务要确保数据库由一个一致性的状态变成另一个一致性的状态。</li>
-<li>隔离性：允许多个事务并发进行，并且执行过程中一个事务不应受另外一个事务影响。</li>
-<li>持久性：已经提交的事务对数据库的修改应该永远保存在数据库中。</li>
-</ul>
-<p>事务的四种隔离：</p>
-<ul>
-<li>读未提交（Read uncommitted）：允许“脏读”，即事务可以读到其它事务还未提交的修改。</li>
-<li>读已提交（Read committed）：只能读取到已经提交的数据。</li>
-<li>可重复读（Repeatable reads）：即在事务中的查询和开始是一致的。</li>
-<li>可串形化（Serializable）：在基于锁机制并发控制的 DBMS 实现可串行化，要求在选定对象上的读锁和写锁保持直到事务结束后才能释放。在 SELECT 的查询中使用一个“WHERE”子句来描述一个范围时应该获得一个“范围锁”（range-locks）。</li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      本文主要是学习数据库事务时的笔记。
-    
-    </summary>
-    
-      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
-    
-    
-      <category term="database" scheme="http://yoursite.com/tags%C3%9F/database/"/>
     
   </entry>
   
