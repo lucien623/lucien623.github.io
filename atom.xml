@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2023-01-01T14:38:20.742Z</updated>
+  <updated>2023-01-05T09:14:40.309Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -16,11 +16,60 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Deadlock in Java</title>
+    <link href="http://yoursite.com/2023/01/05/Deadlock-in-Java/"/>
+    <id>http://yoursite.com/2023/01/05/Deadlock-in-Java/</id>
+    <published>2023-01-05T07:59:32.000Z</published>
+    <updated>2023-01-05T09:14:40.309Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="形成-deadlock-的四个条件"><a href="#形成-deadlock-的四个条件" class="headerlink" title="形成 deadlock 的四个条件"></a>形成 deadlock 的四个条件</h3><ol>
+<li><code>no preemption（禁止抢夺）</code>：线程在未使用完资源之前不能被强制剥夺</li>
+<li><code>hold and wait（持有和等待）</code>：一个线程可以在等待时持有资源</li>
+<li><code>mutual exclusion（互斥）</code>：资源只能同时分配给一个线程使用，无法多个线程共用</li>
+<li><code>circular waiting（循环等待）</code>：一系列线程互相持有其它线程所需要的资源，形成一种头尾相接的等待关系。</li>
+</ol>
+<p>在介绍死锁的一些类型之前先介绍一下 Java 中的 <code>synchronized</code> 关键字，<code>synchronized</code> 可以有三种使用方式：</p>
+<ol>
+<li><p>修饰实例方法（锁作用于当前实例）    </p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span> </span>&#123;&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>修饰静态方法（锁作用于 class 对象）  </p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span> </span>&#123;&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>修饰对象（锁作用于括号中的对象）   </p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="comment">//此时锁作用于括号中的 this 即当前实例</span></div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="deadlock-的几种类型"><a href="#deadlock-的几种类型" class="headerlink" title="deadlock 的几种类型"></a>deadlock 的几种类型</h3><ol>
+<li><p>静态死锁</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LockDemo</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Object objectA = <span class="keyword">new</span> Object();</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Object objectB = <span class="keyword">new</span> Object();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">methodA</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line">        <span class="keyword">synchronized</span> (objectA) &#123;</div><div class="line">            Thread.sleep(<span class="number">3000</span>);</div><div class="line">            <span class="keyword">synchronized</span> (objectB) &#123;</div><div class="line">                System.out.println(<span class="string">"methodA"</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">methodB</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line">        <span class="keyword">synchronized</span> (objectB) &#123;</div><div class="line">            Thread.sleep(<span class="number">3000</span>);</div><div class="line">            <span class="keyword">synchronized</span> (objectA) &#123;</div><div class="line">                System.out.println(<span class="string">"methodB"</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        LockDemo demo = <span class="keyword">new</span> LockDemo();</div><div class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    demo.methodA();</div><div class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    demo.methodB();</div><div class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>如上代码所示，当两个线程分别执行 <code>methodA</code> 和 <code>methodB</code> 方法时，第一个线程调用持有了对象 <code>objectA</code> 的锁，等待对象 <code>objectB</code> 的锁，而第二个线程则相反，持有对象 <code>objectB</code> 的锁，等待对象 <code>objectA</code> 的锁，这样就形成了 circular waiting，导致了死锁。防止这种死锁形成的方法是在两个方法中对两个对象加锁顺序保持一致。</p>
+<ol>
+<li>动态死锁</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      no description
+    
+    </summary>
+    
+      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+      <category term="Java" scheme="http://yoursite.com/tags%C3%9F/Java/"/>
+    
+  </entry>
+  
+  <entry>
     <title>斯多葛主义</title>
     <link href="http://yoursite.com/2023/01/01/%E6%96%AF%E5%A4%9A%E8%91%9B%E4%B8%BB%E4%B9%89/"/>
     <id>http://yoursite.com/2023/01/01/斯多葛主义/</id>
     <published>2023-01-01T14:33:48.000Z</published>
-    <updated>2023-01-01T14:38:20.742Z</updated>
+    <updated>2023-01-05T09:14:36.076Z</updated>
     
     <content type="html"><![CDATA[<h3 id="斯多葛主义的心理技巧"><a href="#斯多葛主义的心理技巧" class="headerlink" title="斯多葛主义的心理技巧"></a>斯多葛主义的心理技巧</h3><ul>
 <li><p>消极想象</p>
@@ -43,9 +92,7 @@
     
     <summary type="html">
     
-      &lt;h3 id=&quot;斯多葛主义的心理技巧&quot;&gt;&lt;a href=&quot;#斯多葛主义的心理技巧&quot; class=&quot;headerlink&quot; title=&quot;斯多葛主义的心理技巧&quot;&gt;&lt;/a&gt;斯多葛主义的心理技巧&lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;消极想象&lt;/p&gt;
-&lt;p&gt;  消极想象的三个好处：一是当我们
+      no description
     
     </summary>
     
@@ -668,41 +715,6 @@
     
     
       <category term="android" scheme="http://yoursite.com/tags%C3%9F/android/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Java反射机制</title>
-    <link href="http://yoursite.com/2018/08/11/Java%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/"/>
-    <id>http://yoursite.com/2018/08/11/Java反射机制/</id>
-    <published>2018-08-11T13:53:45.000Z</published>
-    <updated>2019-10-26T02:08:16.252Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="什么是反射？"><a href="#什么是反射？" class="headerlink" title="什么是反射？"></a>什么是反射？</h3><blockquote>
-<p>Reflection is a feature in the Java programming language. It allows an executing Java program to examine or “introspect” upon itself, and manipulate internal properties of the program. For example, it’s possible for a Java class to obtain the names of all its members and display them. — <a href="https://www.oracle.com/technetwork/articles/java/javareflection-1536171.html" target="_blank" rel="external">from oracle</a></p>
-</blockquote>
-<p>大致意思是反射是 Java 语言的特性之一，它允许一个运行中的 Java 程序去获取自身的信息并操作它们。</p>
-<p>首先我们定义一个 Student 类：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</div><div class="line">	<span class="keyword">public</span> <span class="keyword">int</span> age;</div><div class="line">	<span class="keyword">protected</span> String name;</div><div class="line">	<span class="keyword">public</span> String gender;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">()</span> </span>&#123;</div><div class="line">		</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(<span class="keyword">int</span> age, String name, String gender)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.age = age;</div><div class="line">		<span class="keyword">this</span>.name = name;</div><div class="line">		<span class="keyword">this</span>.gender = gender;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> age;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.age = age;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> name;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.name = name;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getGender</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> gender;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setGender</span><span class="params">(String gender)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.gender = gender;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h3 id="获取-Class-对象"><a href="#获取-Class-对象" class="headerlink" title="获取 Class 对象"></a>获取 Class 对象</h3><p>获取 Class 对象有如下三种方式：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Class clsA = Class.forName(<span class="string">"com.djp.demo.Student"</span>);</div><div class="line">Class clsB = Student.class;</div><div class="line">Class clsC = <span class="keyword">new</span> Student().getClass();</div></pre></td></tr></table></figure></p>
-<h3 id="获取方法"><a href="#获取方法" class="headerlink" title="获取方法"></a>获取方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getMethods</span><span class="params">(Class cls)</span> </span>&#123;</div><div class="line">	Method[] methods = cls.getDeclaredMethods();</div><div class="line">	<span class="keyword">for</span> (Method method : methods) &#123;</div><div class="line">		System.out.println(method.toString());</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>通过<code>getDeclaredMethods()</code>方法可以返回类或者接口的所有方法，包括 public, protected, defalut, and private，但无法获取到继承的方法。打印信息如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">public java.lang.String com.djp.demo.Student.getName()</div><div class="line">public void com.djp.demo.Student.setName(java.lang.String)</div><div class="line">public int com.djp.demo.Student.getAge()</div><div class="line">public java.lang.String com.djp.demo.Student.getGender()</div><div class="line">public void com.djp.demo.Student.setGender(java.lang.String)</div><div class="line">public void com.djp.demo.Student.setAge(int)</div></pre></td></tr></table></figure></p>
-<p>另一个<code>getMethods()</code>方法也可以获取到类和接口的所有方法，与上面方法不同的是调用这个方法只会返回定义为 public 的 Method 对象，包括继承的方法。</p>
-<h3 id="创建实例"><a href="#创建实例" class="headerlink" title="创建实例"></a>创建实例</h3><p>有两种方法可以创建实例，第一种是直接通过 class 对象的 newInstance 创建：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Class clsA = Class.forName(<span class="string">"com.djp.demo.Student"</span>);</div><div class="line">clsA.newInstance();</div></pre></td></tr></table></figure></p>
-<p>第二种通过构造器创建：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Constructor constructor = cls.getConstructor(<span class="keyword">int</span>.class, String.class, String.class);</div><div class="line">Student student = (Student) constructor.newInstance(<span class="number">18</span>, <span class="string">"lucien"</span>, <span class="string">"man"</span>);</div></pre></td></tr></table></figure></p>
-<h3 id="通过-name-调用方法"><a href="#通过-name-调用方法" class="headerlink" title="通过 name 调用方法"></a>通过 name 调用方法</h3><p>首先根据 name 获取到 Method 对象，然后调用 invoke 方法传入对应参数就可以调用方法了，代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Method method = cls.getMethod(<span class="string">"getAge"</span>);</div><div class="line">method.invoke(<span class="keyword">new</span> Student(<span class="number">22</span>,<span class="string">"lucien"</span>,  <span class="string">"man"</span>));</div></pre></td></tr></table></figure></p>
-<h3 id="获取成员变量"><a href="#获取成员变量" class="headerlink" title="获取成员变量"></a>获取成员变量</h3><p>通过调用 <code>getDeclaredFields()</code> 或者 <code>getFields()</code>，方法区别和获取方法类似。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      对 Java 反射机制的简要总结。
-    
-    </summary>
-    
-      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
-    
-    
-      <category term="Java" scheme="http://yoursite.com/tags%C3%9F/Java/"/>
     
   </entry>
   
