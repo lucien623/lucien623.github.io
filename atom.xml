@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2023-01-05T09:14:40.309Z</updated>
+  <updated>2023-01-05T09:17:13.127Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://yoursite.com/2023/01/05/Deadlock-in-Java/"/>
     <id>http://yoursite.com/2023/01/05/Deadlock-in-Java/</id>
     <published>2023-01-05T07:59:32.000Z</published>
-    <updated>2023-01-05T09:14:40.309Z</updated>
+    <updated>2023-01-05T09:17:13.127Z</updated>
     
     <content type="html"><![CDATA[<h3 id="形成-deadlock-的四个条件"><a href="#形成-deadlock-的四个条件" class="headerlink" title="形成 deadlock 的四个条件"></a>形成 deadlock 的四个条件</h3><ol>
 <li><code>no preemption（禁止抢夺）</code>：线程在未使用完资源之前不能被强制剥夺</li>
@@ -47,7 +47,7 @@
 </ol>
 <p>如上代码所示，当两个线程分别执行 <code>methodA</code> 和 <code>methodB</code> 方法时，第一个线程调用持有了对象 <code>objectA</code> 的锁，等待对象 <code>objectB</code> 的锁，而第二个线程则相反，持有对象 <code>objectB</code> 的锁，等待对象 <code>objectA</code> 的锁，这样就形成了 circular waiting，导致了死锁。防止这种死锁形成的方法是在两个方法中对两个对象加锁顺序保持一致。</p>
 <ol>
-<li>动态死锁</li>
+<li>动态死锁<br>//todo</li>
 </ol>
 ]]></content>
     
