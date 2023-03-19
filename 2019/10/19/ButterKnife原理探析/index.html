@@ -1,51 +1,266 @@
-extends base
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ButterKnife原理探析 | Lucien</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="对 ButterKnife 原理的简要分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ButterKnife原理探析">
+<meta property="og:url" content="http://example.com/2019/10/19/ButterKnife%E5%8E%9F%E7%90%86%E6%8E%A2%E6%9E%90/index.html">
+<meta property="og:site_name" content="Lucien">
+<meta property="og:description" content="对 ButterKnife 原理的简要分析。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-10-19T11:03:09.000Z">
+<meta property="article:modified_time" content="2019-10-19T12:46:01.000Z">
+<meta property="article:author" content="Lucien">
+<meta property="article:tag" content="android">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Lucien" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
 
-block title
-  title= page.title + ' | ' + config.title
+  
 
-block content
-  .post
-    h1.post-title= page.title
-    .post-meta= page.date.format('ll')
-      if page.categories.length > 0
-        span= ' | '
-        span.category
-          for category in page.categories.toArray()
-            a(href=url_for(category.path))= category.name
-      if theme.busuanzi == true
-        script(src='https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js', async)
-        span#busuanzi_container_page_pv= ' | '
-          span#busuanzi_value_page_pv
-          span= ' ' + __('Hits')
-    if theme.duoshuo
-      a.ds-thread-count(data-thread-key=page.path, href=url_for(page.path) + '#comments')
-    if theme.disqus
-      a.disqus-comment-count(data-disqus-identifier=page.path, href=url_for(page.path) + '#disqus_thread')
-    if page.toc
-      div(class='clear')
-        div(id='toc' class='toc-article')
-          div(class='toc-title')= __('contents')
-          != toc(page.content)
-    .post-content
-      != page.content
-    if theme.shareto == true
-      script(type='text/javascript', src=url_for(theme.js) + '/share.js' + '?v=' + theme.version, async)
-      a.article-share-link(data-url='#{page.permalink}', data-id='#{page._id}')= __('shareto')
-    include _partial/tag
-    include _partial/post_nav
-    if theme.duoshuo
-      div(class='ds-share flat' data-thread-key=page.path, data-title=page.title, data-url=page.permalink)
-         .ds-share-inline
-            ul.ds-share-icons-16
-              li(data-toggle='ds-share-icons-more')
-                a(class='ds-more' href='javascript:void(0);') 分享到：
-              li
-                a(class='ds-weibo' href='javascript:void(0);' data-service='weibo') 微博
-              li
-                a(class='ds-qzone' href='javascript:void(0);' data-service='qzone') QQ空间
-              li
-                a(class='ds-qqt' href='javascript:void(0);' data-service='qqt') 腾讯微博
-              li
-                a(class='ds-wechat' href='javascript:void(0);' data-service='wechat') 微信
-            .ds-share-icons-more
-    include _partial/comments
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Lucien</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-ButterKnife原理探析" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/19/ButterKnife%E5%8E%9F%E7%90%86%E6%8E%A2%E6%9E%90/" class="article-date">
+  <time datetime="2019-10-19T11:03:09.000Z" itemprop="datePublished">2019-10-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ButterKnife原理探析
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><code>ButterKnife</code>是<code>Android</code>开发中常用的<code>View</code>注入框架，主要作用就是减少<code>findViewById</code>代码，使其更简洁。在分析这个框架之前我们先要了解一下<code>Annotation</code> 注解相关的知识。</p>
+<p>注解是<code>Java</code>语言 5.0 版本开始支持加入源代码的特殊语法元数据。<code>Java</code>语言中的类、方法、变量、参数和包等都可以被标注。主要有三个作用，第一种作用是标记用来告诉编译器一些信息；第二种是编译时处理动态生成代码；第三种是运行时动态处理得到注解信息。注解主要分为三类：</p>
+<p>标准注解：是<code>Java</code>自带的一些注解，比如<code>@Override</code>、<code>@Deprecated</code></p>
+<p>元注解：指用来定义自定义注解的注解，<code>@Retention</code>表示注解的保留时间，<code>SOURCE</code>表示源码时保留编译后会被抛弃，<code>CLASS</code>表示编译时保留运行时会被丢弃，<code>RUNTIME</code>表示运⾏时保留。<code>@Target</code>用来表示注解可以修饰哪些元素，比如<code>TYPE</code>(类、接口)，<code>FIELD</code>（字段），<code>METHOD</code>（方法），<code>CONSTRUCTOR</code>（构造方法）, <code>PARAMETER</code>（参数申明）等。<code>@Inherited</code>表示是否可以被继承，<code>@Documented</code>是否会保存到⽂档。</p>
+<p>自定义注解：通过元注解定义的注解，我们来看以下<code>ButterKnife</code>中的一个自定义注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention(CLASS)</span> </span><br><span class="line"><span class="meta">@Target(FIELD)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> BindView &#123;</span><br><span class="line">  <span class="comment">/** View ID to which the field will be bound. */</span></span><br><span class="line">  <span class="meta">@IdRes</span> <span class="type">int</span> <span class="title function_">value</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以看到这个注解会在编译时被保留<code>@Retention(CLASS)</code>，目标是对于字段<code>@Target(FIELD)</code>，注解的类型是<code>int</code>类型的<code>id</code>资源。</p>
+<p>好了，注解大概就分析这些，接下来来看看<code>ButterKnife</code>是如何实现的。</p>
+<p>首先<code>ButterKnife</code>不仅可以注入<code>View</code>，还可以绑定资源，点击事件等等，使用方式就不一一讲解了，ok，那么我们以绑定<code>view</code>为例，比如我们在<code>LoanFragment</code>里添加了如下代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@BindView(R.id.text_title)</span> TextView mTextTitle;</span><br></pre></td></tr></table></figure>
+<p>然后我们在初始化的时候调用绑定<code>ButterKnife.bind(this, mFragmentView);</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> View <span class="title function_">onCreateView</span><span class="params">(LayoutInflater inflater, <span class="meta">@Nullable</span> ViewGroup container, <span class="meta">@Nullable</span> Bundle savedInstanceState)</span> &#123;</span><br><span class="line">    TAG = <span class="built_in">this</span>.getClass().getSimpleName();</span><br><span class="line">    <span class="keyword">if</span> (mFragmentView == <span class="literal">null</span>) &#123;</span><br><span class="line">        mFragmentView = inflater.inflate(getLayoutId(), container, <span class="literal">false</span>);</span><br><span class="line">        unbinder = ButterKnife.bind(<span class="built_in">this</span>, mFragmentView);</span><br><span class="line">        initView(mFragmentView);</span><br><span class="line">        initData();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> mFragmentView;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着看<code>bind</code>方法里的逻辑</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NonNull</span> <span class="meta">@UiThread</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Unbinder <span class="title function_">bind</span><span class="params">(<span class="meta">@NonNull</span> Object target, <span class="meta">@NonNull</span> View source)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> createBinding(target, source);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Unbinder <span class="title function_">createBinding</span><span class="params">(<span class="meta">@NonNull</span> Object target, <span class="meta">@NonNull</span> View source)</span> &#123;</span><br><span class="line">  Class&lt;?&gt; targetClass = target.getClass();</span><br><span class="line">  <span class="keyword">if</span> (debug) Log.d(TAG, <span class="string">&quot;Looking up binding for &quot;</span> + targetClass.getName());</span><br><span class="line">  Constructor&lt;? <span class="keyword">extends</span> <span class="title class_">Unbinder</span>&gt; constructor = findBindingConstructorForClass(targetClass);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (constructor == <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> Unbinder.EMPTY;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">//noinspection TryWithIdenticalCatches Resolves to API 19+ only type.</span></span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> constructor.newInstance(target, source);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Unable to invoke &quot;</span> + constructor, e);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (InstantiationException e) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Unable to invoke &quot;</span> + constructor, e);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (InvocationTargetException e) &#123;</span><br><span class="line">    <span class="type">Throwable</span> <span class="variable">cause</span> <span class="operator">=</span> e.getCause();</span><br><span class="line">    <span class="keyword">if</span> (cause <span class="keyword">instanceof</span> RuntimeException) &#123;</span><br><span class="line">      <span class="keyword">throw</span> (RuntimeException) cause;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (cause <span class="keyword">instanceof</span> Error) &#123;</span><br><span class="line">      <span class="keyword">throw</span> (Error) cause;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Unable to create binding instance.&quot;</span>, cause);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第一步获取到<code>LoanFragment</code>的<code>Class</code>实例，接着调用<code>findBindingConstructorForClass</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Nullable</span> <span class="meta">@CheckResult</span> <span class="meta">@UiThread</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Constructor&lt;? <span class="keyword">extends</span> <span class="title class_">Unbinder</span>&gt; findBindingConstructorForClass(Class&lt;?&gt; cls) &#123;</span><br><span class="line">  Constructor&lt;? <span class="keyword">extends</span> <span class="title class_">Unbinder</span>&gt; bindingCtor = BINDINGS.get(cls);</span><br><span class="line">  <span class="keyword">if</span> (bindingCtor != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (debug) Log.d(TAG, <span class="string">&quot;HIT: Cached in binding map.&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> bindingCtor;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">String</span> <span class="variable">clsName</span> <span class="operator">=</span> cls.getName();</span><br><span class="line">  <span class="keyword">if</span> (clsName.startsWith(<span class="string">&quot;android.&quot;</span>) || clsName.startsWith(<span class="string">&quot;java.&quot;</span>)) &#123;</span><br><span class="line">    <span class="keyword">if</span> (debug) Log.d(TAG, <span class="string">&quot;MISS: Reached framework class. Abandoning search.&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    Class&lt;?&gt; bindingClass = cls.getClassLoader().loadClass(clsName + <span class="string">&quot;_ViewBinding&quot;</span>);</span><br><span class="line">    <span class="comment">//noinspection unchecked</span></span><br><span class="line">    bindingCtor = (Constructor&lt;? <span class="keyword">extends</span> <span class="title class_">Unbinder</span>&gt;) bindingClass.getConstructor(cls, View.class);</span><br><span class="line">    <span class="keyword">if</span> (debug) Log.d(TAG, <span class="string">&quot;HIT: Loaded binding class and constructor.&quot;</span>);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">    <span class="keyword">if</span> (debug) Log.d(TAG, <span class="string">&quot;Not found. Trying superclass &quot;</span> + cls.getSuperclass().getName());</span><br><span class="line">    bindingCtor = findBindingConstructorForClass(cls.getSuperclass());</span><br><span class="line">  &#125; <span class="keyword">catch</span> (NoSuchMethodException e) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Unable to find binding constructor for &quot;</span> + clsName, e);</span><br><span class="line">  &#125;</span><br><span class="line">  BINDINGS.put(cls, bindingCtor);</span><br><span class="line">  <span class="keyword">return</span> bindingCtor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这一步是为了获取相对应类的构造器，<code>BINDINGS</code>是一个保存着<code>Class</code>实例和构造器相映射的<code>map</code>，进入这个方法会先去判断之前是否已经获取过该<code>Class</code>实例的构造器，如果有则直接<code>return</code>，否则获取到该类的名称，通过该<code>Class</code>实例的类加载器把<code>clsName + &quot;_ViewBinding&quot;</code>加载，再通过这个<code>Class</code>实例获取到相应的构造器返回并放入<code>BINDINGS</code>中，<code>clsName + &quot;_ViewBinding&quot;</code>到底是什么呢，其实在编译之后我们可以在<code>build/generated/source/apt</code>路径下可以找到<code>LoanFragment_ViewBinding</code>这个类，正好是这个拼接字符串的格式，拿到构造器之后会通过<code>return constructor.newInstance(target, source);</code>构建出相应实例，那么继续看这个构造方法里执行了什么</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@UiThread</span></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">LoanFragment_ViewBinding</span><span class="params">(LoanFragment target, View source)</span> &#123;</span><br><span class="line">  <span class="built_in">this</span>.target = target;</span><br><span class="line"></span><br><span class="line">  target.mTextTitle = Utils.findRequiredViewAsType(source, R.id.text_title, <span class="string">&quot;field &#x27;mTextTitle&#x27;&quot;</span>, TextView.class);</span><br><span class="line">  <span class="comment">//...此处省略部分代码</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; T <span class="title function_">findRequiredViewAsType</span><span class="params">(View source, <span class="meta">@IdRes</span> <span class="type">int</span> id, String who,</span></span><br><span class="line"><span class="params">    Class&lt;T&gt; cls)</span> &#123;</span><br><span class="line">  <span class="type">View</span> <span class="variable">view</span> <span class="operator">=</span> findRequiredView(source, id, who);</span><br><span class="line">  <span class="keyword">return</span> castView(view, id, who, cls);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> View <span class="title function_">findRequiredView</span><span class="params">(View source, <span class="meta">@IdRes</span> <span class="type">int</span> id, String who)</span> &#123;</span><br><span class="line">  <span class="type">View</span> <span class="variable">view</span> <span class="operator">=</span> source.findViewById(id);</span><br><span class="line">  <span class="keyword">if</span> (view != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> view;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> getResourceEntryName(source, id);</span><br><span class="line">  <span class="comment">//...此处省略部分代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>很明显了，如果是注入<code>view</code>的话最终还是调用<code>source.findViewById(id)</code>方式获取到的，<code>target.mTextTitle</code>即我们在<code>LoanFragment</code>中定义的<code>mTextTitle</code>，<code>target</code>是我们调用<code>bind</code>方法是传进来的<code>LoanFragment</code>实例。当<code>Activity</code>调用<code>bind</code>方法时</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">AboutUsActivity_ViewBinding</span><span class="params">(AboutUsActivity target)</span> &#123;</span><br><span class="line">  <span class="built_in">this</span>(target, target.getWindow().getDecorView());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里可以看到会获取当前<code>Activity</code>的<code>DecorView</code>，即最顶层布局作为<code>source</code>调用<code>findViewById</code>的。<code>bind</code>的整体流程大致就是如此了，至于那些编译时的注入类主要依靠的是 apt 工具生成的，就暂时不展开了。</p>
+<p>参考文章：<br><a target="_blank" rel="noopener" href="http://trinea.github.io/download/pdf/android/java-annotation.pdf">http://trinea.github.io/download/pdf/android/java-annotation.pdf</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2019/10/19/ButterKnife%E5%8E%9F%E7%90%86%E6%8E%A2%E6%9E%90/" data-id="clffj1r5h0007qn1w648qacw4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags%C3%9F/android/" rel="tag">android</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/20/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0ThreadPoolExecutor%E4%BB%8B%E7%BB%8D/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Java线程池ThreadPoolExecutor介绍
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/18/OkHttp%E5%8E%9F%E7%90%86%E6%8E%A2%E6%9E%90/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">OkHttp原理探析</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%98%85%E8%AF%BB/">阅读</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags%C3%9F/DSA/" rel="tag">DSA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags%C3%9F/Flutter/" rel="tag">Flutter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags%C3%9F/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags%C3%9F/android/" rel="tag">android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags%C3%9F/database/" rel="tag">database</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags%C3%9F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags%C3%9F/DSA/" style="font-size: 16.67px;">DSA</a> <a href="/tags%C3%9F/Flutter/" style="font-size: 10px;">Flutter</a> <a href="/tags%C3%9F/Java/" style="font-size: 13.33px;">Java</a> <a href="/tags%C3%9F/android/" style="font-size: 20px;">android</a> <a href="/tags%C3%9F/database/" style="font-size: 10px;">database</a> <a href="/tags%C3%9F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 10px;">设计模式</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">十二月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/01/05/Deadlock-in-Java/">Deadlock in Java</a>
+          </li>
+        
+          <li>
+            <a href="/2023/01/01/%E6%96%AF%E5%A4%9A%E8%91%9B%E4%B8%BB%E4%B9%89/">斯多葛主义</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/15/%E8%AE%B0%E5%85%B3%E4%BA%8EFragment-java-lang-NoSuchMethodException%E7%9A%84%E4%B8%80%E4%B8%AA%E6%8A%A5%E9%94%99/">记关于Fragment-java.lang.NoSuchMethodException的一个报错</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/31/2021-%E5%B9%B4%E5%96%9C%E6%AC%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%B8%9C%E8%A5%BF/">2021 年喜欢的一些东西</a>
+          </li>
+        
+          <li>
+            <a href="/2021/12/14/Android-%E5%AD%98%E5%82%A8-API/">Android 存储 API</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2023 Lucien<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+  </div>
+</body>
+</html>
