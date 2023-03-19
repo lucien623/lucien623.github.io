@@ -64,6 +64,58 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-HandlerThread原理探析" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/10/12/HandlerThread%E5%8E%9F%E7%90%86%E6%8E%A2%E6%9E%90/" class="article-date">
+  <time datetime="2019-10-12T11:01:50.000Z" itemprop="datePublished">2019-10-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/10/12/HandlerThread%E5%8E%9F%E7%90%86%E6%8E%A2%E6%9E%90/">HandlerThread原理探析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><code>HandlerThread</code>是一个可以执行多个异步操作，而不需要创建多线程的类。<code>HandlerThread</code>继承于<code>Thread</code>，是<code>Thread</code>的子类。</p>
+<p>如何使用<code>HandlerThread</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Handler myHandler;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">startHandlerThread</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">HandlerThread</span> <span class="variable">handlerThread</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HandlerThread</span>(<span class="string">&quot;handlerThread&quot;</span>);</span><br><span class="line">    handlerThread.start();</span><br><span class="line">    myHandler = <span class="keyword">new</span> <span class="title class_">Handler</span>(handlerThread.getLooper()) &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">handleMessage</span><span class="params">(Message msg)</span> &#123;</span><br><span class="line">            <span class="comment">//执行耗时操作</span></span><br><span class="line">            <span class="keyword">switch</span> (msg.what) &#123;</span><br><span class="line">                <span class="keyword">default</span>:</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果我们要执行某一个耗时操作，就只需要通过<code>myHandler</code>调用<code>sendMessage()</code>方法可以了。<br>那么他是如何实现的呢？首先我们要知道它是一个继承于<code>Thread</code>的类，那么当调用<code>start()</code>方法时就会开启线程，然后执行<code>run()</code>方法，接下来看这个方法是如何被重写的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">    mTid = Process.myTid();</span><br><span class="line">    Looper.prepare();</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="built_in">this</span>) &#123;</span><br><span class="line">        mLooper = Looper.myLooper();</span><br><span class="line">        notifyAll();</span><br><span class="line">    &#125;</span><br><span class="line">    Process.setThreadPriority(mPriority);</span><br><span class="line">    onLooperPrepared();</span><br><span class="line">    Looper.loop();</span><br><span class="line">    mTid = -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>其实就是在子线程里创建一个<code>Looper</code>对象，然后调用<code>loop()</code>方法循环获取消息，那么为什么<code>handleMessage(Message msg)</code>会在子线程里执行呢，我们可以看到其实在构建<code>Handler</code>的时候通过<code>handlerThread.getLooper()</code>将子线程的<code>looper</code>传入了，理所当然<code>loop()</code>中<code>msg.target.dispatchMessage(msg);</code>也会在子线程中执行。</p>
+<p>其实在<code>IntentService</code>内部就是用了<code>HandlerThread</code>来实现的，不妨来看看它的源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">IntentService</span> <span class="keyword">extends</span> <span class="title class_">Service</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> Looper mServiceLooper;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> ServiceHandler mServiceHandler;</span><br><span class="line">    <span class="keyword">private</span> String mName;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">boolean</span> mRedelivery;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">ServiceHandler</span> <span class="keyword">extends</span> <span class="title class_">Handler</span> &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">ServiceHandler</span><span class="params">(Looper looper)</span> &#123;</span><br><span class="line">            <span class="built_in">super</span>(looper);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">handleMessage</span><span class="params">(Message msg)</span> &#123;</span><br><span class="line">            onHandleIntent((Intent)msg.obj);</span><br><span class="line">            stopSelf(msg.arg1);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates an IntentService.  Invoked by your subclass&#x27;s constructor.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> name Used to name the worker thread, important only for debugging.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">IntentService</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>();</span><br><span class="line">        mName = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Sets intent redelivery preferences.  Usually called from the constructor</span></span><br><span class="line"><span class="comment">     * with your preferred semantics.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If enabled is true,</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> #onStartCommand(Intent, int, int)&#125; will return</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> Service#START_REDELIVER_INTENT&#125;, so if this process dies before</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> #onHandleIntent(Intent)&#125; returns, the process will be restarted</span></span><br><span class="line"><span class="comment">     * and the intent redelivered.  If multiple Intents have been sent, only</span></span><br><span class="line"><span class="comment">     * the most recent one is guaranteed to be redelivered.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If enabled is false (the default),</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> #onStartCommand(Intent, int, int)&#125; will return</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> Service#START_NOT_STICKY&#125;, and if the process dies, the Intent</span></span><br><span class="line"><span class="comment">     * dies along with it.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setIntentRedelivery</span><span class="params">(<span class="type">boolean</span> enabled)</span> &#123;</span><br><span class="line">        mRedelivery = enabled;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onCreate</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// <span class="doctag">TODO:</span> It would be nice to have an option to hold a partial wakelock</span></span><br><span class="line">        <span class="comment">// during processing, and to have a static startService(Context, Intent)</span></span><br><span class="line">        <span class="comment">// method that would launch the service &amp; hand off a wakelock.</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">super</span>.onCreate();</span><br><span class="line">        <span class="type">HandlerThread</span> <span class="variable">thread</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HandlerThread</span>(<span class="string">&quot;IntentService[&quot;</span> + mName + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        thread.start();</span><br><span class="line"></span><br><span class="line">        mServiceLooper = thread.getLooper();</span><br><span class="line">        mServiceHandler = <span class="keyword">new</span> <span class="title class_">ServiceHandler</span>(mServiceLooper);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onStart</span><span class="params">(<span class="meta">@Nullable</span> Intent intent, <span class="type">int</span> startId)</span> &#123;</span><br><span class="line">        <span class="type">Message</span> <span class="variable">msg</span> <span class="operator">=</span> mServiceHandler.obtainMessage();</span><br><span class="line">        msg.arg1 = startId;</span><br><span class="line">        msg.obj = intent;</span><br><span class="line">        mServiceHandler.sendMessage(msg);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * You should not override this method for your IntentService. Instead,</span></span><br><span class="line"><span class="comment">     * override &#123;<span class="doctag">@link</span> #onHandleIntent&#125;, which the system calls when the IntentService</span></span><br><span class="line"><span class="comment">     * receives a start request.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> android.app.Service#onStartCommand</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">onStartCommand</span><span class="params">(<span class="meta">@Nullable</span> Intent intent, <span class="type">int</span> flags, <span class="type">int</span> startId)</span> &#123;</span><br><span class="line">        onStart(intent, startId);</span><br><span class="line">        <span class="keyword">return</span> mRedelivery ? START_REDELIVER_INTENT : START_NOT_STICKY;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onDestroy</span><span class="params">()</span> &#123;</span><br><span class="line">        mServiceLooper.quit();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Unless you provide binding for your service, you don&#x27;t need to implement this</span></span><br><span class="line"><span class="comment">     * method, because the default implementation returns null.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> android.app.Service#onBind</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="meta">@Nullable</span></span><br><span class="line">    <span class="keyword">public</span> IBinder <span class="title function_">onBind</span><span class="params">(Intent intent)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * This method is invoked on the worker thread with a request to process.</span></span><br><span class="line"><span class="comment">     * Only one Intent is processed at a time, but the processing happens on a</span></span><br><span class="line"><span class="comment">     * worker thread that runs independently from other application logic.</span></span><br><span class="line"><span class="comment">     * So, if this code takes a long time, it will hold up other requests to</span></span><br><span class="line"><span class="comment">     * the same IntentService, but it will not hold up anything else.</span></span><br><span class="line"><span class="comment">     * When all requests have been handled, the IntentService stops itself,</span></span><br><span class="line"><span class="comment">     * so you should not call &#123;<span class="doctag">@link</span> #stopSelf&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> intent The value passed to &#123;<span class="doctag">@link</span></span></span><br><span class="line"><span class="comment">     *               android.content.Context#startService(Intent)&#125;.</span></span><br><span class="line"><span class="comment">     *               This may be null if the service is being restarted after</span></span><br><span class="line"><span class="comment">     *               its process has gone away; see</span></span><br><span class="line"><span class="comment">     *               &#123;<span class="doctag">@link</span> android.app.Service#onStartCommand&#125;</span></span><br><span class="line"><span class="comment">     *               for details.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@WorkerThread</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title function_">onHandleIntent</span><span class="params">(<span class="meta">@Nullable</span> Intent intent)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以看到在<code>onCreate()</code>方法里创建了一个命名为<code>thread</code>的<code>HandlerThread</code>实例，同时也创建了一个<code>ServiceHandler</code>的实例，并将从<code>thread</code>里获取到的<code>looper</code>作为初始化参数传入，在<code>onStart()</code>方法中调用了<code>mServiceHandler.sendMessage(msg);</code>，再看<code>ServiceHandler</code>中的<code>handleMessage(Message msg)</code>方法中调用了<code>onHandleIntent((Intent)msg.obj);</code>，即我们要实现的抽象方法，该方法在子线程中执行。</p>
+<p><code>HanderThread</code>的优点在于我们可以不用重复创建线程执行异步操作，缺点也很明显，就是它是队列的形式执行异步任务。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2019/10/12/HandlerThread%E5%8E%9F%E7%90%86%E6%8E%A2%E6%9E%90/" data-id="clffj1r5k000nqn1w3fwx8mt7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags%C3%9F/android/" rel="tag">android</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Java反射机制" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/08/11/Java%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/" class="article-date">
@@ -563,70 +615,6 @@
 
 
   
-    <article id="post-重拾-DSA-之队列" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/08/12/%E9%87%8D%E6%8B%BE-DSA-%E4%B9%8B%E9%98%9F%E5%88%97/" class="article-date">
-  <time datetime="2017-08-12T08:40:19.000Z" itemprop="datePublished">2017-08-12</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/08/12/%E9%87%8D%E6%8B%BE-DSA-%E4%B9%8B%E9%98%9F%E5%88%97/">重拾 DSA 之队列</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>下面是 wikipedia 对于队列的定义：</p>
-<blockquote>
-<p><strong>队列</strong>又称为伫列（queue），是先进先出（FIFO, First In First Out）的线性表。在具体应用中通常用链表或者数组来实现。队列只允许在后端（称为rear）进行插入操作，在前端（称为front）进行删除操作。</p>
-</blockquote>
-<p>队列和栈十分相似，不同点在于栈是 Last In First Out，而队列是 First In First Out。</p>
-<p>这里使用 LinkedList 存储数据。</p>
-<ul>
-<li>添加一个元素</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">push</span><span class="params">(T t)</span> &#123;</span><br><span class="line">	mList.addLast(t);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>移除元素</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">pop</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="keyword">if</span>(!mList.isEmpty()) &#123;</span><br><span class="line">		mList.removeFirst();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>获取队列元素</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> T <span class="title function_">getHead</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> mList.getFirst();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><a target="_blank" rel="noopener" href="https://github.com/lucien623/DSA_Review/blob/master/Queue.java">Source Code</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2017/08/12/%E9%87%8D%E6%8B%BE-DSA-%E4%B9%8B%E9%98%9F%E5%88%97/" data-id="clffj1r5r002jqn1whq5rb766" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags%C3%9F/DSA/" rel="tag">DSA</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
 
 
   <nav id="page-nav">
@@ -669,7 +657,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">十二月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">十二月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li></ul>
     </div>
   </div>
 
@@ -680,6 +668,10 @@
     <h3 class="widget-title">最新文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2023/03/19/baidu-bing-and-google/">baidu bing and google</a>
+          </li>
         
           <li>
             <a href="/2023/01/05/Deadlock-in-Java/">Deadlock in Java</a>
@@ -695,10 +687,6 @@
         
           <li>
             <a href="/2021/12/31/2021-%E5%B9%B4%E5%96%9C%E6%AC%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%B8%9C%E8%A5%BF/">2021 年喜欢的一些东西</a>
-          </li>
-        
-          <li>
-            <a href="/2021/12/14/Android-%E5%AD%98%E5%82%A8-API/">Android 存储 API</a>
           </li>
         
       </ul>
