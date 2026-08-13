@@ -653,6 +653,7 @@ pre {
   }
   #rocket.launch {
     background-position: 50% -62px;
+    filter: grayscale(1) brightness(0.72) contrast(1.08);
     opacity: 0;
     -webkit-transform: translateY(-500px);
     -moz-transform: translateY(-500px);
