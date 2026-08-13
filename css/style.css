@@ -59,7 +59,30 @@ a:active {
 }
 
 a:focus {
-  outline: auto;
+  outline: none;
+}
+
+/* Keep keyboard focus visible without the browser's harsh black outline. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #909ba2;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* A restrained graphite text-selection treatment. */
+::selection {
+  color: #303234;
+  background: #dfe1e2;
+}
+
+::-moz-selection {
+  color: #303234;
+  background: #dfe1e2;
 }
 
 .clear {
@@ -452,7 +475,7 @@ div {
 .page-navigator a:hover,
 .page-navigator span:hover {
   background: #F8F8F8;
-  border-bottom-color: #D26911;
+  border-bottom-color: #6E7173;
 }
 .page-navigator a.prev,
 .page-navigator span.prev {
@@ -476,7 +499,7 @@ div {
 }
 .page-navigator .current {
   background: #F8F8F8;
-  border-bottom-color: #D26911;
+  border-bottom-color: #6E7173;
 }
 .page-navigator .space {
   border: none;
@@ -616,6 +639,7 @@ pre {
   }
   #rocket:hover {
     background-position: 50% -62px;
+    filter: grayscale(1) brightness(0.72) contrast(1.08);
   }
   #rocket:hover i {
     background-position: 50% 100%;
@@ -976,7 +1000,7 @@ pre {
 }
 .readmore a:hover {
   background: #F8F8F8;
-  border-bottom-color: #D26911;
+  border-bottom-color: #6E7173;
 }
 
 /* syntax highlight*/
@@ -1807,7 +1831,7 @@ em.search-keyword {
   background-color: #a4a61d !important;
 }
 .github-badge .bg-orange {
-  background-color: #FE7D37 !important;
+  background-color: #6E7173 !important;
 }
 .github-badge .bg-yellow {
   background-color: #dfb317 !important;
@@ -1883,20 +1907,67 @@ html[data-dark=true] img {
 }
 
 .darkmode-toggle {
-  background: #a2a2a2;
-  width: 3rem;
-  height: 3rem;
+  appearance: none;
+  background: #6e7173;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  width: 2.75rem;
+  height: 2.75rem;
   position: fixed;
   z-index: 999;
   border-radius: 50%;
-  left: 32px;
-  bottom: 32px;
+  left: 24px;
+  bottom: 24px;
   right: unset;
   cursor: pointer;
-  transition: all 0.5s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0;
+}
+.darkmode-toggle:hover {
+  background: #4d4f50;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+  transform: translateY(-1px);
+}
+.darkmode-toggle:focus-visible {
+  outline: 2px solid #909ba2;
+  outline-offset: 3px;
+}
+.darkmode-toggle__icon {
+  box-sizing: border-box;
+  display: block;
+  width: 1.05rem;
+  height: 1.05rem;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+}
+.darkmode-toggle__icon::after {
+  background: #6e7173;
+  border-radius: 50%;
+  content: "";
+  height: 1rem;
+  position: absolute;
+  right: -0.48rem;
+  top: -0.32rem;
+  width: 1rem;
+}
+
+html[data-dark=true] .darkmode-toggle {
+  background: #f5f5f5;
+  border-color: rgba(18, 18, 18, 0.2);
+}
+html[data-dark=true] .darkmode-toggle:hover {
+  background: #fff;
+}
+html[data-dark=true] .darkmode-toggle__icon {
+  border-color: #3d3f40;
+}
+html[data-dark=true] .darkmode-toggle__icon::after {
+  background: #f5f5f5;
 }
 
 /* Links Layout*/
