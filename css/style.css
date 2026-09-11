@@ -19,8 +19,8 @@ select,
 textarea,
 .MJXc-TeX-unknown-R,
 .pure-g [class*=pure-u] {
-  /* Set your content font stack here: */
-  font-family: "PingFangSC-Regular", Helvetica, "Helvetica Neue", "Segoe UI", "Hiragino Sans GB", "Source Han Sans CN", "Microsoft YaHei", "STHeiti", "WenQuanYi Micro Hei", sans-serif !important;
+  /* Use the Hume reading face site-wide, with a Chinese serif fallback. */
+  font-family: "IM Fell English", "GFS Didot", "Songti SC", STSong, SimSun, serif !important;
 }
 
 @font-face {
@@ -40,7 +40,7 @@ textarea,
 body {
   background-color: #FFF;
   color: #444;
-  font-family: "TIBch", "Classic Grotesque W01", "Helvetica Neue", Arial, "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "WenQuanYi Micro Hei", SimSun, sans-serif;
+  font-family: "IM Fell English", "GFS Didot", "Songti SC", STSong, SimSun, serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 14px;
@@ -123,7 +123,7 @@ div {
   overflow: hidden;
 }
 #header .site-name #logo {
-  font: bold 38px/1.12 "Times New Roman", Georgia, Times, sans-serif;
+  font: normal 38px/1.12 "IM Fell English", "GFS Didot", "Songti SC", STSong, SimSun, serif;
   color: #555;
 }
 #header .site-name #logo span, #header .site-name #logo:hover {
@@ -540,7 +540,7 @@ div {
 }
 .post-archive h2 {
   margin: 0;
-  font: bold 25px/1.1 "ff-tisa-web-pro", Cambria, "Times New Roman", Georgia, Times, sans-serif;
+  font: normal 25px/1.18 "IM Fell English", "GFS Didot", "Songti SC", STSong, SimSun, serif;
 }
 .post-archive .date {
   padding-right: 0.7em;
@@ -599,7 +599,7 @@ blockquote::before,
 .stressed-quote::before {
   content: "“";
   display: block;
-  font-family: times;
+  font-family: "IM Fell English", "GFS Didot", "Songti SC", STSong, SimSun, serif;
   font-style: normal;
   font-size: 48px;
   color: #444;
@@ -767,7 +767,7 @@ pre {
 }
 
 #process span.number {
-  font-family: "Georgia", serif, Helvetica, "Helvetica Neue", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans CN", "WenQuanYi Micro Hei", Arial, sans-serif;
+  font-family: "IM Fell English", "GFS Didot", "Songti SC", STSong, SimSun, serif;
   font-style: italic;
   font-size: 20px;
   line-height: 0;
@@ -798,7 +798,7 @@ pre {
 }
 
 .timeline-label p {
-  font-family: Helvetica, "Helvetica Neue", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans CN", "WenQuanYi Micro Hei", Arial, sans-serif;
+  font-family: "IM Fell English", "GFS Didot", "Songti SC", STSong, SimSun, serif;
   margin-bottom: 3px;
 }
 
@@ -909,7 +909,7 @@ pre {
 #process .present,
 #process .born {
   font-size: 14px;
-  font-family: "Georgia", serif, Helvetica, "Helvetica Neue", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans CN", "WenQuanYi Micro Hei", Arial, sans-serif;
+  font-family: "IM Fell English", "GFS Didot", "Songti SC", STSong, SimSun, serif;
   font-style: italic;
   color: #333;
   padding: 10px;
@@ -1680,7 +1680,7 @@ table tr:nth-child(2n) {
   width: 100%;
   background: none;
   box-sizing: border-box;
-  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 14px "IM Fell English", "GFS Didot", "Songti SC", STSong, SimSun, serif;
   padding: 0 15px;
   color: #555;
   outline: none;
@@ -1785,7 +1785,7 @@ em.search-keyword {
   min-width: 50px;
   padding: 0 14px;
   display: inline-block;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: "IM Fell English", "GFS Didot", "Songti SC", STSong, SimSun, serif;
   font-size: 14px;
   font-weight: 400;
   letter-spacing: 0;
