@@ -23,6 +23,20 @@ textarea,
   font-family: "PingFangSC-Regular", Helvetica, "Helvetica Neue", "Segoe UI", "Hiragino Sans GB", "Source Han Sans CN", "Microsoft YaHei", "STHeiti", "WenQuanYi Micro Hei", sans-serif !important;
 }
 
+@font-face {
+  font-family: "IM Fell English";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/im-fell-english-roman.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IM Fell English";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/im-fell-english-italic.woff2") format("woff2");
+}
 body {
   background-color: #FFF;
   color: #444;
@@ -259,7 +273,7 @@ div {
   margin: 0;
   color: #555;
   text-align: left;
-  font: bold 25px/1.1 "ff-tisa-web-pro", Cambria, "Times New Roman", Georgia, Times, sans-serif;
+  font: normal 26px/1.18 "IM Fell English", "GFS Didot", "Songti SC", STSong, SimSun, serif;
 }
 .post .post-title a {
   color: #555;
@@ -334,8 +348,9 @@ div {
 }
 .post .post-content {
   clear: left;
-  font-size: 15px;
-  line-height: 1.77;
+  font-family: "IM Fell English", "GFS Didot", "Songti SC", STSong, SimSun, serif;
+  font-size: 17px;
+  line-height: 1.82;
   color: #444;
   padding-top: 15px;
   text-align: justify;
